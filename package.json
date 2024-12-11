@@ -1,8 +1,8 @@
 {
-  "name": "com.creator-hian.unity.package-sample",
+  "name": "com.creator-hian.unity.singleton",
   "version": "0.0.1",
-  "displayName": "Hian Package Sample",
-  "unity": "2022.3",
+  "displayName": "Hian Unity Singleton",
+  "unity": "2021.3",
   "keywords": [
     "Hian"
   ],
@@ -11,13 +11,13 @@
     "email": "shahian12@gmail.com",
     "url": "https://github.com/creator-hian"
   },
-  "description": "Unity Package 작성을 위한 Base Repository입니다.",
+  "description": "유니티에서 전역적으로 접근 가능한 단일 인스턴스를 보장하는 싱글톤 패턴 구현 패키지",
   "dependencies": {},
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@creator-hian"
   },
   "repository": {
-    // "type": "git",
-    // "url": "git+https://github.com/creator-hian/Unity-Common.git"
+    "type": "git",
+    "url": "git+https://github.com/creator-hian/Unity-Singleton.git"
   }
 }
