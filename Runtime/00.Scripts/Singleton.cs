@@ -1,9 +1,8 @@
 using System;
 using System.Threading;
-using System.Diagnostics;
 using System.Reflection;
 
-namespace FAMOZ.Singleton
+namespace Hian.Singleton
 {
     /// <summary>
     /// 향상된 thread-safe 싱글턴 패턴 구현

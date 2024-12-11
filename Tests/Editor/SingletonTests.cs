@@ -3,7 +3,7 @@ using System.Threading;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
-using FAMOZ.Singleton;
+using Hian.Singleton;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

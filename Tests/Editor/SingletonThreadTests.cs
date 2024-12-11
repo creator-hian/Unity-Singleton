@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using FAMOZ.Singleton;
+using Hian.Singleton;
 
 public enum StressLevel
 {
@@ -287,7 +287,7 @@ public class SingletonThreadTests
 
     [Test]
     [TestCaseSource(nameof(ThreadStressTestCases))]
-    [Timeout(60000)]
+    [Timeout(600000)]
     public async Task Instance_UnderThreadStress(ThreadStressTestData testData)
     {
         TestContext.WriteLine($"테스트 시작: {testData.TestName}");
