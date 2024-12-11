@@ -1,6 +1,6 @@
-# Unity-Package-Base
+# Unity-Singleton
 
-Unity Package 작성을 위한 Base Repository입니다.
+Unity에서 사용할 수 있는 Singleton 패턴 구현을 제공하는 패키지입니다.
 
 ## 요구사항
 
@@ -9,7 +9,15 @@ Unity Package 작성을 위한 Base Repository입니다.
 
 ## 개요
 
+이 패키지는 Unity 프로젝트에서 Singleton 패턴을 쉽게 구현할 수 있도록 도와주는 기능을 제공합니다. MonoBehaviour를 상속받는 클래스에서 싱글톤 패턴을 적용하거나, 일반 C# 클래스에서 싱글톤을 구현할 때 사용할 수 있습니다.
+
 ## 주요 기능
+
+- MonoBehaviour 기반의 Singleton 구현
+- 일반 C# 클래스용 Singleton 구현
+- Scene 전환 시에도 유지되는 Singleton (DontDestroyOnLoad 지원)
+- Thread-safe Singleton 구현
+- Lazy initialization 지원
 
 ## 설치 방법
 
@@ -29,7 +37,7 @@ Unity Package 작성을 위한 Base Repository입니다.
 3. 다음 URL을 입력합니다:
 
 ```text
-https://github.com/creator-hian/Unity-Common.git
+https://github.com/creator-hian/Unity-Singleton.git
 ```
 
 4. 'Add' 버튼을 클릭합니다.
@@ -43,7 +51,7 @@ https://github.com/creator-hian/Unity-Common.git
 ```json
 {
   "dependencies": {
-    // "com.creator-hian.unity.common": "https://github.com/creator-hian/Unity-Common.git",
+    "com.creator-hian.unity.singleton": "https://github.com/creator-hian/Unity-Singleton.git",
     ...
   }
 }
@@ -56,7 +64,7 @@ https://github.com/creator-hian/Unity-Common.git
 ```json
 {
   "dependencies": {
-    // "com.creator-hian.unity.common": "https://github.com/creator-hian/Unity-Common.git#0.0.1",
+    "com.creator-hian.unity.singleton": "https://github.com/creator-hian/Unity-Singleton.git#1.0.0",
     ...
   }
 }
