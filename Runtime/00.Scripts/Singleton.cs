@@ -30,6 +30,7 @@ namespace FAMOZ.Singleton
 
         private bool _disposed;
         private static bool _isInitializing;
+        private static bool _isInitialized;
 
         protected Singleton()
         {
@@ -47,11 +48,18 @@ namespace FAMOZ.Singleton
                 {
                     _isInitializing = true;
                     var instance = _lazy.Value;
+                    _isInitialized = true;
+                    
                     if (instance._disposed)
                     {
                         throw new ObjectDisposedException(typeof(T).FullName);
                     }
                     return instance;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    // 리플렉션 예외 언래핑
+                    throw ex.InnerException ?? ex;
                 }
                 finally
                 {
@@ -68,12 +76,12 @@ namespace FAMOZ.Singleton
 
         protected virtual void Dispose(bool disposing)
         {
-            // 파생 클래스에서 리소스 정리 구현
             if (_disposed) return;
 
             if (disposing)
             {
                 // 관리되는 리소스 정리
+                _isInitialized = false;
             }
             _disposed = true;
         }
@@ -90,5 +98,7 @@ namespace FAMOZ.Singleton
         {
             Dispose(false);
         }
+
+        public static bool IsInitialized => _isInitialized;
     }
 }
