@@ -399,7 +399,7 @@ public class SingletonThreadTests
         }
         catch (OperationCanceledException)
         {
-            TestContext.WriteLine("작업이 시간 제한으로 인해 취소되었습니다.");
+            TestContext.WriteLine("작업이 ��간 제한으로 인해 취소되었습니다.");
         }
         finally
         {
@@ -471,7 +471,7 @@ public class SingletonThreadTests
 
         // Assert
         Assert.That(exceptions, Is.Empty, "멀티스레드 환경에서 예외가 발생하지 않아야 합니다");
-        Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 스드가 동일한 인스턴스를 참조해야 합니다");
+        Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 ���드가 동일한 인스턴스를 참조해야 합니다");
         Assert.That(TestSingleton.Instance.Counter, Is.EqualTo(threadCount), "모든 증가 연산이 안전하게 수행되어야 합니다");
     }
 
@@ -698,5 +698,40 @@ public class SingletonThreadTests
 
         // Assert
         Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 스레드가 동일한 인스턴스를 받아야 합니다");
+    }
+
+    [Test]
+    [Order(7)]
+    public void Instance_CalledFromMultipleThreadsAfterDispose_ThrowsException()
+    {
+        // Arrange
+        const int threadCount = 10;
+        var tasks = new List<Task>();
+        var exceptions = new ConcurrentBag<Exception>();
+        var instance = TestSingleton.Instance;
+        instance.Dispose(); // Dispose 먼저 호출
+
+        // Act
+        for (int i = 0; i < threadCount; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                try
+                {
+                    var temp = TestSingleton.Instance; // Dispose 후 Instance 호출
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }));
+        }
+
+        Task.WaitAll(tasks.ToArray());
+
+        // Assert
+        Assert.That(exceptions, Is.Not.Empty, "Dispose 후 Instance 호출 시 예외가 발생해야 합니다");
+        Assert.That(exceptions, Has.All.TypeOf<ObjectDisposedException>(),
+            "Dispose 후 Instance 호출 시 ObjectDisposedException이 발생해야 합니다");
     }
 }
