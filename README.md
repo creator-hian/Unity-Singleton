@@ -13,9 +13,14 @@ Unity에서 사용할 수 있는 Singleton 패턴 구현을 제공하는 패키�
 
 ## 주요 기능
 
-- MonoBehaviour 기반의 Singleton 구현
+- MonoBehaviour 기반의 Singleton 구현 (`SingletonMonoBehaviour<T>`)
+    - 스레드 안전한 싱글톤 인스턴스 생성
+    - 씬 전환 시에도 유지되는 싱글톤 (DontDestroyOnLoad 지원)
+    - 비활성화된 게임 오브젝트에서 인스턴스 검색 가능
+    - 명시적 초기화 지원 (`EnsureInitialized()`)
+    - 중복 인스턴스 방지
+    - 사용자 정의 초기화 로직 추가 가능 (`OnSingletonAwake()`)
 - 일반 C# 클래스용 Singleton 구현
-- Scene 전환 시에도 유지되는 Singleton (DontDestroyOnLoad 지원)
 - Thread-safe Singleton 구현
 - Lazy initialization 지원
 
