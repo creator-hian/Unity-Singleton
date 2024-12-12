@@ -13,9 +13,121 @@ Unity에서 사용할 수 있는 Singleton 패턴 구현을 제공하는 패키�
 
 ## 주요 기능
 
-- MonoBehaviour 기반의 Singleton 구현
-- 일반 C# 클래스용 Singleton 구현
-- Scene 전환 시에도 유지되는 Singleton (DontDestroyOnLoad 지원)
+### 일반 C# 클래스용 Singleton 구현 (`Singleton<T>`)
+
+- 스레드 안전한 싱글톤 인스턴스 생성
+- Lazy initialization 지원
+
+#### `IDisposable` 인터페이스를 통한 리소스 관리
+
+- 싱글톤 인스턴스가 더 이상 필요하지 않을 때 리소스를 해제할 수 있습니다.
+
+```csharp
+public class MySingleton : Singleton<MySingleton>
+{
+    private UnityEngine.Object _resource;
+
+            public MySingleton()
+            {
+                _resource = Resources.Load("MyResource");
+            }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Resources.UnloadAsset(_resource);
+            _resource = null;
+        }
+        base.Dispose(disposing);
+    }
+}
+
+// 사용 예시
+var instance = MySingleton.Instance;
+// ... 싱글톤 사용 ...
+instance.Dispose(); // 리소스 해제
+```
+
+<!-- markdownlint-disable MD033 -->
+<p style="background-color:#fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; margin: 10px 0;">
+    ⚠️ <strong>주의!</strong> <code>Dispose</code> 메서드는 싱글톤 인스턴스가 더 이상 필요하지 않을 때 리소스를 해제하기 위해 사용됩니다. <code>Dispose</code>를 호출한 후에는 싱글톤 인스턴스를 다시 사용하려는 시도를 하지 않도록 주의해야 합니다. 예를 들어, 게임 종료 시 또는 특정 모듈이 더 이상 필요하지 않을 때 <code>Dispose</code>를 호출할 수 있습니다.
+</p>
+<!-- markdownlint-enable MD033 -->
+
+<!-- markdownlint-disable MD033 -->
+<p style="background-color:#f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; margin: 10px 0;">
+    ⚠️ <strong>매우 중요!</strong> <code>Dispose</code> 메서드를 호출한 후에는 <strong>해당 싱글톤 인스턴스를 다시 사용할 수 없습니다.</strong> <code>Instance</code> 속성에 접근하면 <strong><code>ObjectDisposedException</code>이 발생합니다.</strong>
+</p>
+<!-- markdownlint-enable MD033 -->
+
+#### 리플렉션을 이용한 생성자 호출 방지
+
+- 싱글톤 클래스의 생성자를 직접 호출하는 것을 방지하여 싱글톤 패턴을 강제합니다.
+
+#### 싱글톤 인스턴스 초기화 여부 확인 기능 (`IsInitialized`)
+
+- 싱글톤 인스턴스가 초기화되었는지 여부를 확인할 수 있습니다.
+
+```csharp
+if (MySingleton.IsInitialized)
+{
+    // 싱글톤 인스턴스가 초기화된 경우
+    var instance = MySingleton.Instance;
+}
+else
+{
+    // 싱글톤 인스턴스가 초기화되지 않은 경우
+}
+```
+
+#### 싱글톤 인스턴스 Dispose 여부 확인 기능 (`IsInstanceDisposed`)
+
+- 싱글톤 인스턴스가 Dispose되었는지 여부를 확인할 수 있습니다.
+
+```csharp
+var instance = MySingleton.Instance;
+instance.Dispose();
+if (MySingleton.IsInstanceDisposed)
+{
+    // 싱글톤 인스턴스가 Dispose된 경우
+}
+```
+
+<!-- markdownlint-disable MD033 -->
+<p style="background-color:#f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; margin: 10px 0;">
+    ⚠️ <strong>매우 중요!</strong> <code>Dispose</code> 메서드를 호출한 후에는 <strong>해당 싱글톤 인스턴스를 다시 사용할 수 없습니다.</strong> <code>Instance</code> 속성에 접근하면 <strong><code>ObjectDisposedException</code>이 발생합니다.</strong>
+</p>
+<!-- markdownlint-enable MD033 -->
+
+### MonoBehaviour 기반의 Singleton 구현 (`SingletonMonoBehaviour<T>`)
+
+- 스레드 안전한 싱글톤 인스턴스 생성
+- 씬 전환 시에도 유지되는 싱글톤 (DontDestroyOnLoad 지원)
+- 비활성화된 게임 오브젝트에서 인스턴스 검색 가능
+- 명시적 초기화 지원 (`EnsureInitialized()`)
+- 중복 인스턴스 방지
+- 사용자 정의 초기화 로직 추가 가능 (`OnSingletonAwake()`)
+
+```csharp
+public class MyMonoSingleton : SingletonMonoBehaviour<MyMonoSingleton>
+{
+    public bool IsInitialized { get; private set; }
+    public bool Persist { get; set; } = true;
+
+    protected override void OnSingletonAwake()
+    {
+        base.OnSingletonAwake();
+        IsInitialized = true;
+        Persist = true;
+    }
+}
+
+// 사용 예시
+var instance = MyMonoSingleton.Instance;
+// ... 싱글톤 사용 ...
+```
+
 - Thread-safe Singleton 구현
 - Lazy initialization 지원
 
@@ -77,7 +189,6 @@ https://github.com/creator-hian/Unity-Singleton.git
 ## 문서
 
 각 기능에 대한 자세한 설명은 해당 기능의 README를 참조하세요:
-
 
 ## 원작성자
 
