@@ -1,0 +1,51 @@
+using UnityEngine;
+
+public class #SCRIPTNAME# : SingletonScriptableObject<#SCRIPTNAME#>
+{
+    /// <summary>
+    /// 에셋의 경로를 정의하는 클래스입니다.
+    /// 
+    /// [경로 설정 방법]
+    /// ResourcesLoadPath는 Resources 폴더 내의 상대 경로입니다.
+    /// AssetCreatePath는 ResourcesLoadPath를 기반으로 자동 생성됩니다.
+    /// 
+    /// [경로 규칙]
+    /// - 영문자, 숫자, 언더스코어(_), 슬래시(/) 만 사용 가능
+    /// - 슬래시(/)로 시작할 수 없음
+    /// - 연속된 슬래시(//) 사용 불가
+    /// - 반드시 Resources 폴더 내에 위치해야 함
+    /// 
+    /// [예시]
+    /// 1. 단일 파일:
+    ///    ResourcesLoadPath => "GameSettings"
+    ///    결과 경로: Assets/Resources/GameSettings.asset
+    /// 
+    /// 2. 하위 폴더 사용:
+    ///    ResourcesLoadPath => "Configs/GameSettings"
+    ///    결과 경로: Assets/Resources/Configs/GameSettings.asset
+    /// </summary>
+    private class #SCRIPTNAME#Path : AssetPath
+    {
+        protected override string ResourcesLoadPath => "#SCRIPTNAME#";
+    }
+
+    static #SCRIPTNAME#()
+    {
+        SetPath(new #SCRIPTNAME#Path());
+    }
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// 메뉴에서 에셋을 생성하기 위한 메서드입니다.
+    /// AssetCreatePath에 지정된 경로에 에셋을 생성합니다.
+    /// 이미 에셋이 존재하는 경우, 해당 에셋을 선택합니다.
+    /// </summary>
+    [UnityEditor.MenuItem("ScriptableObjects/Create #SCRIPTNAME# SO")]
+    private static void CreateAsset()
+    {
+        EditorHelper.CreateAssetFromMenu();
+    }
+#endif
+
+    // 여기에 필요한 데이터와 메서드를 추가합니다.
+} 

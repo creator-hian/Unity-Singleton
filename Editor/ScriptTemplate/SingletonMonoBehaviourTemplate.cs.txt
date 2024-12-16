@@ -1,0 +1,16 @@
+using UnityEngine;
+using Hian.Singleton;
+
+public class #SCRIPTNAME# : SingletonMonoBehaviour<#SCRIPTNAME#>
+{
+    protected override void OnSingletonAwake()
+    {
+        // 초기화 코드를 여기에 작성하세요.
+    }
+
+    protected override void OnDestroy()
+    {
+        // 정리 코드를 여기에 작성하세요.
+        base.OnDestroy();
+    }
+} 
