@@ -12,6 +12,19 @@ All notable changes to this project will be documented in this file.
   - **Patch**: 하위 호환성 있는 버그 수정
 - **최신 버전이 상단에, 이전 버전이 하단에 기록됩니다.**
 
+## [0.2.0] - 2024-12-13
+
+### Added
+
+- ScriptableObject 기반의 Singleton 구현 (`SingletonScriptableObject<T>`)
+  - 스레드 안전한 싱글톤 인스턴스 생성
+  - Lazy initialization 지원
+  - Resources 폴더 기반 자동 에셋 로드
+  - 에디터 환경에서 자동 에셋 생성 지원
+  - 경로 검증 및 안전한 에셋 관리
+  - 런타임/에디터 환경에서의 에러 처리
+  - 커스텀 에셋 경로 설정 기능
+
 ## [0.1.0] - 2024-12-12
 
 ### Added
