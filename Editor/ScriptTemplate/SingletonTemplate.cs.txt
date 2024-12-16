@@ -1,0 +1,14 @@
+using System;
+using Hian.Singleton;
+
+public class #SCRIPTNAME# : Singleton<#SCRIPTNAME#>, IDisposable
+{
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // 관리되는 리소스를 해제하는 코드를 여기에 작성하세요.
+        }
+        base.Dispose(disposing);
+    }
+} 

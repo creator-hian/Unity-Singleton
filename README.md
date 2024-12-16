@@ -131,6 +131,45 @@ var instance = MyMonoSingleton.Instance;
 - Thread-safe Singleton 구현
 - Lazy initialization 지원
 
+### ScriptableObject 기반의 Singleton 구현 (`SingletonScriptableObject<T>`)
+
+- 스레드 안전한 싱글톤 인스턴스 생성
+- Lazy initialization 지원
+- Resources 폴더 기반 자동 에셋 로드
+- 에디터 환경에서 자동 에셋 생성 지원
+- 경로 검증 및 안전한 에셋 관리
+
+#### 사용 예시
+
+```csharp
+[CreateAssetMenu(fileName = "GameConfig", menuName = "Config/GameConfig")]
+public class GameConfig : SingletonScriptableObject<GameConfig>
+{
+protected class ConfigPath : AssetPath
+{
+protected override string ResourcesLoadPath => "Config/GameConfig";
+}
+// 정적 생성자에서 경로 설정
+static GameConfig()
+{
+SetPath(new ConfigPath());
+}
+public float gameSpeed = 1.0f;
+public bool isSoundEnabled = true;
+}
+// 사용 방법
+void Start()
+{
+float speed = GameConfig.Instance.gameSpeed;
+bool soundEnabled = GameConfig.Instance.isSoundEnabled;
+}
+```
+<!-- markdownlint-disable MD033 -->
+<p style="background-color:#fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; margin: 10px 0;">
+    ⚠️ <strong>주의!</strong> ScriptableObject 싱글톤을 사용하기 위해서는 반드시 Resources 폴더 내에 해당 에셋이 존재해야 합니다. 에디터 모드에서는 자동으로 생성되지만, 빌드 시에는 수동으로 에셋을 생성하고 올바른 경로에 위치시켜야 합니다.
+</p>
+<!-- markdownlint-enable MD033 -->
+
 ## 설치 방법
 
 ### UPM을 통한 설치 (Git URL 사용)
@@ -145,7 +184,7 @@ var instance = MyMonoSingleton.Instance;
 1. Unity 에디터에서 Window > Package Manager를 엽니다.
 2. 좌측 상단의 + 버튼을 클릭하고 "Add package from git URL"을 선택합니다.
 
-   ![Package Manager Add Git URL](Document/upm-ui-giturl.png)
+   ![Package Manager Add Git URL](https://i.imgur.com/1tCNo66.png)
 3. 다음 URL을 입력합니다:
 
 ```text
@@ -154,7 +193,7 @@ https://github.com/creator-hian/Unity-Singleton.git
 
 4. 'Add' 버튼을 클릭합니다.
 
-   ![Package Manager Add Button](Document/upm-ui-giturl-add.png)
+   ![Package Manager Add Button](https://i.imgur.com/yIiD4tT.png)
 
 #### 설치 방법 2: manifest.json 직접 수정
 
