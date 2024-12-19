@@ -1,6 +1,6 @@
-using UnityEngine;
 using System;
 using System.IO;
+using UnityEngine;
 
 /// <summary>
 /// 싱글톤 패턴이 적용된 ScriptableObject 추상 클래스입니다.
@@ -25,7 +25,7 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
     protected abstract class AssetPath
     {
         private const string RESOURCES_PATH = "Assets/Resources/";
-        private static readonly System.Text.RegularExpressions.Regex ValidResourcePathPattern = 
+        private static readonly System.Text.RegularExpressions.Regex ValidResourcePathPattern =
             new System.Text.RegularExpressions.Regex(@"^[a-zA-Z0-9_/][a-zA-Z0-9_/]*$");
 
         private string _validatedPath;
@@ -64,16 +64,18 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
 
             if (!ValidResourcePathPattern.IsMatch(path))
                 throw new System.InvalidOperationException(
-                    $"Invalid ResourcePath format: '{path}'\n" +
-                    "ResourcePath must:\n" +
-                    "- Contain only letters, numbers, underscores, and forward slashes\n" +
-                    "- Not start with a slash\n" +
-                    "- Not contain spaces or special characters");
+                    $"Invalid ResourcePath format: '{path}'\n"
+                        + "ResourcePath must:\n"
+                        + "- Contain only letters, numbers, underscores, and forward slashes\n"
+                        + "- Not start with a slash\n"
+                        + "- Not contain spaces or special characters"
+                );
 
             if (path.Contains("//"))
                 throw new System.InvalidOperationException(
-                    $"Invalid ResourcePath: '{path}'\n" +
-                    "ResourcePath cannot contain consecutive slashes");
+                    $"Invalid ResourcePath: '{path}'\n"
+                        + "ResourcePath cannot contain consecutive slashes"
+                );
         }
     }
 
@@ -122,11 +124,11 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
                 LogError($"Failed to load instance from path: {_path.LoadPath}");
 
                 // 에디터 환경에서는 에셋을 생성하고, 런타임 환경에서는 에러 처리를 합니다.
-                #if UNITY_EDITOR
-                    instance = EditorHelper.CreateAssetInEditor();
-                #else
-                    HandleRuntimeAssetMissing();
-                #endif
+#if UNITY_EDITOR
+                instance = EditorHelper.CreateAssetInEditor();
+#else
+                HandleRuntimeAssetMissing();
+#endif
             }
 
             return instance;
@@ -174,7 +176,7 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
         Debug.LogError($"[{typeof(T).Name}] {message}");
     }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     /// <summary>
     /// 에디터 환경에서 에셋을 생성하고 관리하는 헬퍼 클래스입니다.
     /// </summary>
@@ -239,12 +241,14 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
             }
 
             string path = _path.AssetCreatePath;
-            
+
             // 이미 존재하는지 확인
             if (File.Exists(path))
             {
                 LogError($"Asset already exists at: {path}");
-                UnityEditor.Selection.activeObject = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
+                UnityEditor.Selection.activeObject = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(
+                    path
+                );
                 return;
             }
 
