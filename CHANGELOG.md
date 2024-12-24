@@ -27,7 +27,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.0] - 2024-12-12
 
+<!-- markdownlint-disable MD024 -->
 ### Added
+<!-- markdownlint-enable MD024 -->
 
 - Initialize Package
 - MonoBehaviour 기반의 Singleton 구현 (`SingletonMonoBehaviour<T>`)
@@ -44,7 +46,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.1] - 2024-12-12
 
+<!-- markdownlint-disable MD024 -->
 ### Added
+<!-- markdownlint-enable MD024 -->
 
 - Initialize Package
 - 일반 C# 클래스 기반의 Singleton 구현 (`Singleton<T>`)
@@ -54,7 +58,3 @@ All notable changes to this project will be documented in this file.
   - 리플렉션을 이용한 생성자 호출 방지
   - 싱글톤 인스턴스 초기화 여부 확인 기능
   - 싱글톤 인스턴스 Dispose 여부 확인 기능
-
-### Changed
-
-### Fixed

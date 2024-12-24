@@ -60,22 +60,28 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
         private void ValidateResourcePath(string path)
         {
             if (string.IsNullOrEmpty(path))
-                throw new System.InvalidOperationException("ResourcePath cannot be null or empty.");
+            {
+                throw new InvalidOperationException("ResourcePath cannot be null or empty.");
+            }
 
             if (!ValidResourcePathPattern.IsMatch(path))
-                throw new System.InvalidOperationException(
+            {
+                throw new InvalidOperationException(
                     $"Invalid ResourcePath format: '{path}'\n"
                         + "ResourcePath must:\n"
                         + "- Contain only letters, numbers, underscores, and forward slashes\n"
                         + "- Not start with a slash\n"
                         + "- Not contain spaces or special characters"
                 );
+            }
 
             if (path.Contains("//"))
-                throw new System.InvalidOperationException(
+            {
+                throw new InvalidOperationException(
                     $"Invalid ResourcePath: '{path}'\n"
                         + "ResourcePath cannot contain consecutive slashes"
                 );
+            }
         }
     }
 
@@ -136,16 +142,6 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
     }
 
     /// <summary>
-    /// 런타임 환경에서 에셋이 없을 때 호출되는 메서드입니다.
-    /// </summary>
-    private static void HandleRuntimeAssetMissing()
-    {
-        LogError("Missing required asset in runtime environment!");
-        // 추가적인 런타임 에러 처리를 여기에 작성할 수 있습니다.
-        // 예를 들어, 기본값을 사용하거나, 게임을 중지하거나, 사용자에게 알림을 표시할 수 있습니다.
-    }
-
-    /// <summary>
     /// OnDisable()은 게임 오브젝트가 비활성화되거나 삭제될 때 호출되는 Unity 이벤트 함수입니다.
     /// 이 메서드는 애플리케이션 종료 여부를 설정하는 데 사용됩니다.
     /// </summary>
@@ -188,10 +184,10 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
         /// <returns>생성된 에셋</returns>
         public static T CreateAssetInEditor()
         {
-            var asset = CreateInstance<T>();
+            T asset = CreateInstance<T>();
             string path = _path.AssetCreatePath;
 
-            EnsureDirectoryExists(System.IO.Path.GetDirectoryName(path));
+            EnsureDirectoryExists(Path.GetDirectoryName(path));
             UnityEditor.AssetDatabase.CreateAsset(asset, path);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
@@ -208,7 +204,7 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
         {
             if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(directoryPath);
+                _ = Directory.CreateDirectory(directoryPath);
             }
         }
 
@@ -224,7 +220,7 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
             }
 
             string path = _path.AssetCreatePath;
-            EnsureDirectoryExists(System.IO.Path.GetDirectoryName(path));
+            EnsureDirectoryExists(Path.GetDirectoryName(path));
             UnityEditor.AssetDatabase.CreateAsset(asset, path);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
@@ -252,8 +248,8 @@ public abstract class SingletonScriptableObject<T> : ScriptableObject
                 return;
             }
 
-            var asset = CreateInstance<T>();
-            EnsureDirectoryExists(System.IO.Path.GetDirectoryName(path));
+            T asset = CreateInstance<T>();
+            EnsureDirectoryExists(Path.GetDirectoryName(path));
             UnityEditor.AssetDatabase.CreateAsset(asset, path);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();

@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using Hian.Singleton;
+using NUnit.Framework;
 
 namespace Singleton
 {
@@ -16,10 +16,12 @@ namespace Singleton
         private class TestSingleton : Singleton<TestSingleton>, IDisposable
         {
             private int _value;
+
             /// <summary>
             /// 객체가 Dispose 되었는지 여부를 나타냅니다.
             /// </summary>
             public bool IsDisposed { get; private set; }
+
             /// <summary>
             /// 싱글턴 객체의 값을 가져옵니다.
             /// </summary>
@@ -39,8 +41,6 @@ namespace Singleton
             /// 싱글턴 객체의 상태를 나타냅니다.
             /// </summary>
             public string State { get; private set; } = "InitialState";
-
-            private readonly bool _isFeatureEnabled;
 
             /// <summary>
             /// 리소스가 해제되었는지 여부를 나타냅니다.
@@ -139,11 +139,15 @@ namespace Singleton
         public void Instance_ReturnsSameInstance()
         {
             // Arrange
-            var instance1 = TestSingleton.Instance;
-            var instance2 = TestSingleton.Instance;
+            TestSingleton instance1 = TestSingleton.Instance;
+            TestSingleton instance2 = TestSingleton.Instance;
 
             // Assert
-            Assert.That(instance1, Is.EqualTo(instance2), "싱글턴은 항상 동일한 인스턴스를 반환해야 합니다");
+            Assert.That(
+                instance1,
+                Is.EqualTo(instance2),
+                "싱글턴은 항상 동일한 인스턴스를 반환해야 합니다"
+            );
         }
 
         /// <summary>
@@ -154,14 +158,17 @@ namespace Singleton
         public void Instance_ThrowsExceptionAfterDispose()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
             instance.Dispose();
 
             // Act & Assert
-            Assert.Throws<ObjectDisposedException>(() =>
-            {
-                var _ = TestSingleton.Instance;
-            }, "Dispose 후 인스턴스에 접근하면 ObjectDisposedException이 발생해야 합니다");
+            _ = Assert.Throws<ObjectDisposedException>(
+                static () =>
+                {
+                    _ = TestSingleton.Instance;
+                },
+                "Dispose 후 인스턴스에 접근하면 ObjectDisposedException이 발생해야 합니다"
+            );
         }
 
         /// <summary>
@@ -172,14 +179,18 @@ namespace Singleton
         public void IncrementValue_IncrementsValue()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
             int initialValue = instance.Value;
 
             // Act
             instance.IncrementValue();
 
             // Assert
-            Assert.That(instance.Value, Is.EqualTo(initialValue + 1), "IncrementValue는 값을 1 증가시켜야 합니다");
+            Assert.That(
+                instance.Value,
+                Is.EqualTo(initialValue + 1),
+                "IncrementValue는 값을 1 증가시켜야 합니다"
+            );
         }
 
         /// <summary>
@@ -190,8 +201,8 @@ namespace Singleton
         public void ChangeState_ChangesState()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
-            var newState = "NewState";
+            TestSingleton instance = TestSingleton.Instance;
+            string newState = "NewState";
 
             // Act
             instance.ChangeState(newState);
@@ -208,10 +219,13 @@ namespace Singleton
         public void ThrowException_ThrowsException()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
 
             // Act & Assert
-            Assert.Throws<Exception>(() => instance.ThrowException(), "ThrowException은 예외를 발생시켜야 합니다");
+            _ = Assert.Throws<Exception>(
+                () => instance.ThrowException(),
+                "ThrowException은 예외를 발생시켜야 합니다"
+            );
         }
 
         /// <summary>
@@ -222,11 +236,14 @@ namespace Singleton
         public void ThrowIfDisposed_ThrowsExceptionAfterDispose()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
             instance.Dispose();
 
             // Act & Assert
-            Assert.Throws<ObjectDisposedException>(() => instance.IncrementValue(), "Dispose 후 메서드 호출 시 ObjectDisposedException이 발생해야 합니다");
+            _ = Assert.Throws<ObjectDisposedException>(
+                () => instance.IncrementValue(),
+                "Dispose 후 메서드 호출 시 ObjectDisposedException이 발생해야 합니다"
+            );
         }
 
         /// <summary>
@@ -237,7 +254,7 @@ namespace Singleton
         public void Dispose_SetsIsDisposedTrue()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
 
             // Act
             instance.Dispose();
@@ -254,7 +271,7 @@ namespace Singleton
         public void Dispose_ReleasesResources()
         {
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
             instance.UseResource(); // 리소스 사용
 
             // Act
@@ -262,7 +279,7 @@ namespace Singleton
 
             // Assert
             // Dispose 호출 전에 IsResourceReleased 값을 변수에 저장
-            var isResourceReleased = instance.IsResourceReleased;
+            bool isResourceReleased = instance.IsResourceReleased;
             Assert.That(isResourceReleased, Is.True, "Dispose 후 리소스가 해제되어야 합니다");
         }
 
@@ -274,19 +291,31 @@ namespace Singleton
         public void IsInitialized_ReturnsCorrectValue()
         {
             // Assert
-            Assert.That(TestSingleton.IsInitialized, Is.False, "인스턴스 접근 전 IsInitialized는 false여야 합니다");
+            Assert.That(
+                TestSingleton.IsInitialized,
+                Is.False,
+                "인스턴스 접근 전 IsInitialized는 false여야 합니다"
+            );
 
             // Arrange
-            var instance = TestSingleton.Instance;
+            TestSingleton instance = TestSingleton.Instance;
 
             // Assert
-            Assert.That(TestSingleton.IsInitialized, Is.True, "인스턴스 접근 후 IsInitialized는 true여야 합니다");
+            Assert.That(
+                TestSingleton.IsInitialized,
+                Is.True,
+                "인스턴스 접근 후 IsInitialized는 true여야 합니다"
+            );
 
             // Act
             instance.Dispose();
 
             // Assert
-            Assert.That(TestSingleton.IsInitialized, Is.False, "Dispose 후 IsInitialized는 false여야 합니다");
+            Assert.That(
+                TestSingleton.IsInitialized,
+                Is.False,
+                "Dispose 후 IsInitialized는 false여야 합니다"
+            );
         }
 
         /// <summary>
@@ -297,8 +326,10 @@ namespace Singleton
         public void ProtectedConstructor_CalledDirectly_ThrowsException()
         {
             // Act & Assert
-            Assert.Throws<InvalidOperationException>(() => new TestSingleton(),
-                "TestSingleton 내부에서 protected 생성자를 직접 호출하는 것은 예외를 발생시켜야 합니다");
+            _ = Assert.Throws<InvalidOperationException>(
+                static () => new TestSingleton(),
+                "TestSingleton 내부에서 protected 생성자를 직접 호출하는 것은 예외를 발생시켜야 합니다"
+            );
         }
     }
 }

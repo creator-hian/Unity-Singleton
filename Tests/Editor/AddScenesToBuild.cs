@@ -1,8 +1,8 @@
-using UnityEditor;
-using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 public class AddScenesToBuild
 {
@@ -12,7 +12,8 @@ public class AddScenesToBuild
         string packageRootPath = "Packages/com.creator-hian.unity.singleton"; // 패키지 루트 경로
 
         // 스캔할 씬 폴더 경로
-        List<string> sceneFolderPaths = new List<string>(){
+        List<string> sceneFolderPaths = new List<string>()
+        {
             "Tests/Runtime/SingletonMonoBehaviour",
         };
 
@@ -32,7 +33,7 @@ public class AddScenesToBuild
         foreach (string guid in sceneGuids)
         {
             string scenePath = AssetDatabase.GUIDToAssetPath(guid);
-            
+
             // 이미 빌드 씬에 추가되어 있는지 확인
             if (!buildScenes.Any(scene => scene.path == scenePath))
             {

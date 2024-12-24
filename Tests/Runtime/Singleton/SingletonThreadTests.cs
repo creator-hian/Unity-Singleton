@@ -1,12 +1,12 @@
 using System;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 using Hian.Singleton;
+using NUnit.Framework;
 
 namespace Singleton
 {
@@ -19,18 +19,21 @@ namespace Singleton
         /// 낮은 부하 수준
         /// </summary>
         Low,
+
         /// <summary>
         /// 중간 부하 수준
         /// </summary>
         Medium,
+
         /// <summary>
         /// 높은 부하 수준
         /// </summary>
         High,
+
         /// <summary>
         /// 극심한 부하 수준
         /// </summary>
-        Extreme
+        Extreme,
     }
 
     /// <summary>
@@ -42,54 +45,67 @@ namespace Singleton
         /// 테스트에 사용될 태스크의 총 개수입니다.
         /// </summary>
         public int TaskCount { get; }
+
         /// <summary>
         /// 각 태스크에서 수행할 작업의 횟수입니다.
         /// </summary>
         public int OperationsPerTask { get; }
+
         /// <summary>
         /// 테스트의 시간 제한(초)입니다.
         /// </summary>
         public int TimeoutSeconds { get; }
+
         /// <summary>
         /// 컨텍스트 스위칭을 사용할지 여부입니다.
         /// </summary>
         public bool UseContextSwitching { get; }
+
         /// <summary>
         /// 동기화를 사용할지 여부입니다.
         /// </summary>
         public bool UseSynchronization { get; }
+
         /// <summary>
         /// 카오스 엔지니어링을 사용할지 여부입니다.
         /// </summary>
         public bool UseChaos { get; }
+
         /// <summary>
         /// 메모리 압박을 사용할지 여부입니다.
         /// </summary>
         public bool UseMemoryPressure { get; }
+
         /// <summary>
         /// 네트워크 지연을 사용할지 여부입니다.
         /// </summary>
         public bool UseNetworkLatency { get; }
+
         /// <summary>
         /// 비정상 종료 시뮬레이션을 사용할지 여부입니다.
         /// </summary>
         public bool UseCrashSimulation { get; }
+
         /// <summary>
         /// 메모리 블록 크기입니다.
         /// </summary>
         public int MemoryBlockSize { get; }
+
         /// <summary>
         /// 네트워크 지연 시간 배열입니다.
         /// </summary>
         public int[] NetworkDelays { get; }
+
         /// <summary>
         /// 비정상 종료 확률입니다.
         /// </summary>
         public int CrashProbability { get; }
+
         /// <summary>
         /// 테스트의 부하 수준입니다.
         /// </summary>
         public StressLevel Level { get; }
+
         /// <summary>
         /// 테스트 이름입니다.
         /// </summary>
@@ -126,7 +142,8 @@ namespace Singleton
             int[] networkDelays,
             int crashProbability,
             StressLevel level,
-            string testName)
+            string testName
+        )
         {
             TaskCount = taskCount;
             OperationsPerTask = operationsPerTask;
@@ -148,7 +165,10 @@ namespace Singleton
         /// 테스트 데이터의 문자열 표현을 반환합니다.
         /// </summary>
         /// <returns>테스트 데이터의 문자열 표현</returns>
-        public override string ToString() => $"[{Level}] {TestName}";
+        public override string ToString()
+        {
+            return $"[{Level}] {TestName}";
+        }
     }
 
     /// <summary>
@@ -179,6 +199,7 @@ namespace Singleton
         private class TestSingleton : Singleton<TestSingleton>, IDisposable
         {
             private int _counter;
+
             /// <summary>
             /// 싱글톤 인스턴스의 카운터 값입니다.
             /// </summary>
@@ -246,7 +267,8 @@ namespace Singleton
                 networkDelays: new[] { 50 },
                 crashProbability: 0,
                 StressLevel.Low,
-                "컨텍스트 스위칭 테스트");
+                "컨텍스트 스위칭 테스트"
+            );
 
             yield return new ThreadStressTestData(
                 taskCount: 10,
@@ -262,7 +284,8 @@ namespace Singleton
                 networkDelays: new[] { 50 },
                 crashProbability: 0,
                 StressLevel.Low,
-                "동기화 테스트");
+                "동기화 테스트"
+            );
 
             yield return new ThreadStressTestData(
                 taskCount: 10,
@@ -278,7 +301,8 @@ namespace Singleton
                 networkDelays: new int[] { 50 },
                 crashProbability: 0,
                 StressLevel.Low,
-                "카오스 테스트");
+                "카오스 테스트"
+            );
 
             // TODO: 복합테스트의 경우 모든 태스크가 종료되어도 테스트가 종료되지 않는 문제가 있음.
             // // 중부하 테스트
@@ -363,7 +387,8 @@ namespace Singleton
                 networkDelays: new[] { 50, 100, 200 },
                 crashProbability: 0,
                 StressLevel.High,
-                "메모리 압박 테스트");
+                "메모리 압박 테스트"
+            );
 
             yield return new ThreadStressTestData(
                 taskCount: 10,
@@ -379,7 +404,8 @@ namespace Singleton
                 networkDelays: new[] { 100, 200, 500, 1000 },
                 crashProbability: 0,
                 StressLevel.High,
-                "네트워크 지연 테스트");
+                "네트워크 지연 테스트"
+            );
 
             yield return new ThreadStressTestData(
                 taskCount: 10,
@@ -395,7 +421,8 @@ namespace Singleton
                 networkDelays: new[] { 50 },
                 crashProbability: 5,
                 StressLevel.High,
-                "비정상 종료 테스트");
+                "비정상 종료 테스트"
+            );
 
             // TODO: 복합테스트의 경우 모든 태스크가 종료되어도 테스트가 종료되지 않는 문제가 있음.
             // // 극한 복합 테스트
@@ -426,85 +453,109 @@ namespace Singleton
         public async Task Instance_UnderThreadStress(ThreadStressTestData testData)
         {
             TestContext.WriteLine($"테스트 시작: {testData.TestName}");
-            TestContext.WriteLine($"부하 수준: {testData.Level}, 태스크 수: {testData.TaskCount}, 작업 수: {testData.OperationsPerTask}");
+            TestContext.WriteLine(
+                $"부하 수준: {testData.Level}, 태스크 수: {testData.TaskCount}, 작업 수: {testData.OperationsPerTask}"
+            );
 
             // Arrange
-            var tasks = new List<Task>();
-            var exceptions = new ConcurrentBag<Exception>();
-            var instances = new ConcurrentBag<TestSingleton>();
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(testData.TimeoutSeconds));
-            var instance = TestSingleton.Instance;
-            var counter = 0;
-            var counterLock = new object();
-            var startEvent = new ManualResetEventSlim(false);
-            var startTime = DateTime.Now;
+            List<Task> tasks = new List<Task>();
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            ConcurrentBag<TestSingleton> instances = new ConcurrentBag<TestSingleton>();
+            CancellationTokenSource cts = new CancellationTokenSource(
+                TimeSpan.FromSeconds(testData.TimeoutSeconds)
+            );
+            TestSingleton instance = TestSingleton.Instance;
+            int counter = 0;
+            object counterLock = new object();
+            ManualResetEventSlim startEvent = new ManualResetEventSlim(false);
+            DateTime startTime = DateTime.Now;
 
             try
             {
                 // 작업 스레드들 생성
                 for (int i = 0; i < testData.TaskCount; i++)
                 {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        try
-                        {
-                            startEvent.Wait(cts.Token);
-
-                            for (int j = 0; j < testData.OperationsPerTask && !cts.Token.IsCancellationRequested; j++)
+                    tasks.Add(
+                        Task.Run(
+                            async () =>
                             {
-                                if (testData.UseNetworkLatency)
+                                try
                                 {
-                                    await Task.Delay(testData.NetworkDelays[GetRandomNumber(testData.NetworkDelays.Length)], cts.Token);
+                                    startEvent.Wait(cts.Token);
+
+                                    for (
+                                        int j = 0;
+                                        j < testData.OperationsPerTask
+                                            && !cts.Token.IsCancellationRequested;
+                                        j++
+                                    )
+                                    {
+                                        if (testData.UseNetworkLatency)
+                                        {
+                                            await Task.Delay(
+                                                testData.NetworkDelays[
+                                                    GetRandomNumber(testData.NetworkDelays.Length)
+                                                ],
+                                                cts.Token
+                                            );
+                                        }
+
+                                        TestSingleton localInstance = TestSingleton.Instance;
+                                        instances.Add(localInstance);
+                                        localInstance.Increment();
+
+                                        lock (counterLock)
+                                        {
+                                            counter++;
+                                        }
+
+                                        if (testData.UseContextSwitching && j % 10 == 0)
+                                        {
+                                            await Task.Yield();
+                                        }
+                                    }
                                 }
-
-                                var localInstance = TestSingleton.Instance;
-                                instances.Add(localInstance);
-                                localInstance.Increment();
-
-                                lock (counterLock)
+                                catch (Exception ex) when (ex is not OperationCanceledException)
                                 {
-                                    counter++;
+                                    exceptions.Add(ex);
                                 }
-
-                                if (testData.UseContextSwitching && j % 10 == 0)
-                                {
-                                    await Task.Yield();
-                                }
-                            }
-                        }
-                        catch (Exception ex) when (!(ex is OperationCanceledException))
-                        {
-                            exceptions.Add(ex);
-                        }
-                    }, cts.Token));
+                            },
+                            cts.Token
+                        )
+                    );
                 }
 
                 // 메모리 압박 태스크 (필요한 경우)
                 if (testData.UseMemoryPressure)
                 {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        var memoryBlocks = new List<byte[]>();
-                        try
-                        {
-                            while (!cts.Token.IsCancellationRequested)
+                    tasks.Add(
+                        Task.Run(
+                            async () =>
                             {
-                                memoryBlocks.Add(new byte[1024 * 1024]); // 1MB
-                                await Task.Delay(100, cts.Token);
-                                if (memoryBlocks.Count > 10)
+                                List<byte[]> memoryBlocks = new List<byte[]>();
+                                try
+                                {
+                                    while (!cts.Token.IsCancellationRequested)
+                                    {
+                                        memoryBlocks.Add(new byte[1024 * 1024]); // 1MB
+                                        await Task.Delay(100, cts.Token);
+                                        if (memoryBlocks.Count > 10)
+                                        {
+                                            memoryBlocks.Clear();
+                                            GC.Collect();
+                                        }
+                                    }
+                                }
+                                catch (OperationCanceledException) { }
+                                finally
                                 {
                                     memoryBlocks.Clear();
                                     GC.Collect();
                                 }
-                            }
-                        }
-                        catch (OperationCanceledException) { }
-                        finally
-                        {
-                            memoryBlocks.Clear();
-                            GC.Collect();
-                        }
-                    }, cts.Token));
+                            },
+                            cts.Token
+                        )
+                    );
                 }
 
                 // 모든 작업 시작
@@ -519,7 +570,7 @@ namespace Singleton
             }
             finally
             {
-                var duration = DateTime.Now - startTime;
+                TimeSpan duration = DateTime.Now - startTime;
                 TestContext.WriteLine($"테스트 소요 시간: {duration.TotalSeconds:F2}초");
                 TestContext.WriteLine($"최종 카운터 값: {counter}");
 
@@ -529,8 +580,16 @@ namespace Singleton
 
             // Assert
             Assert.That(exceptions, Is.Empty, "예기치 않은 예외가 발생하지 않아야 합니다");
-            Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 작업이 동일한 인스턴스를 참조해야 합니다");
-            Assert.That(instance.Counter, Is.EqualTo(counter), "모든 증가 연산이 정확하게 수행되어야 합니다");
+            Assert.That(
+                instances.Distinct().Count(),
+                Is.EqualTo(1),
+                "모든 작업이 동일한 인스턴스를 참조해야 합니다"
+            );
+            Assert.That(
+                instance.Counter,
+                Is.EqualTo(counter),
+                "모든 증가 연산이 정확하게 수행되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -540,17 +599,25 @@ namespace Singleton
         public void SetUp()
         {
             // 싱글톤 인스턴스 재설정 로직
-            var field = typeof(Singleton<TestSingleton>)
-                .GetField("_lazy", BindingFlags.NonPublic | BindingFlags.Static);
-            field?.SetValue(null, new Lazy<TestSingleton>(() =>
-            {
-                var instance = Activator.CreateInstance(typeof(TestSingleton), true) as TestSingleton;
-                if (instance == null)
-                {
-                    throw new InvalidOperationException($"Failed to create instance of {typeof(TestSingleton)}");
-                }
-                return instance;
-            }, LazyThreadSafetyMode.ExecutionAndPublication));
+            FieldInfo field = typeof(Singleton<TestSingleton>).GetField(
+                "_lazy",
+                BindingFlags.NonPublic | BindingFlags.Static
+            );
+            field?.SetValue(
+                null,
+                new Lazy<TestSingleton>(
+                    static () =>
+                    {
+                        TestSingleton instance =
+                            Activator.CreateInstance(typeof(TestSingleton), true) as TestSingleton
+                            ?? throw new InvalidOperationException(
+                                $"Failed to create instance of {typeof(TestSingleton)}"
+                            );
+                        return instance;
+                    },
+                    LazyThreadSafetyMode.ExecutionAndPublication
+                )
+            );
         }
 
         /// <summary>
@@ -562,10 +629,10 @@ namespace Singleton
         {
             // Arrange
             const int threadCount = 100;
-            var instances = new ConcurrentBag<TestSingleton>();
-            var exceptions = new ConcurrentBag<Exception>();
-            var countdown = new CountdownEvent(threadCount);
-            var random = new Random();
+            ConcurrentBag<TestSingleton> instances = new ConcurrentBag<TestSingleton>();
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            CountdownEvent countdown = new CountdownEvent(threadCount);
+            Random random = new Random();
 
             // Act
             for (int i = 0; i < threadCount; i++)
@@ -580,11 +647,14 @@ namespace Singleton
                     }
                     catch (Exception ex)
                     {
-                        lock (exceptions) exceptions.Add(ex);
+                        lock (exceptions)
+                        {
+                            exceptions.Add(ex);
+                        }
                     }
                     finally
                     {
-                        countdown.Signal();
+                        _ = countdown.Signal();
                     }
                 }).Start();
             }
@@ -593,8 +663,16 @@ namespace Singleton
 
             // Assert
             Assert.That(exceptions, Is.Empty, "멀티스레드 환경에서 예외가 발생하지 않아야 합니다");
-            Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 스레드가 동일한 인스턴스를 참조해야 합니다");
-            Assert.That(TestSingleton.Instance.Counter, Is.EqualTo(threadCount), "모든 증가 연산이 안전하게 수행되어야 합니다");
+            Assert.That(
+                instances.Distinct().Count(),
+                Is.EqualTo(1),
+                "모든 스레드가 동일한 인스턴스를 참조해야 합니다"
+            );
+            Assert.That(
+                TestSingleton.Instance.Counter,
+                Is.EqualTo(threadCount),
+                "모든 증가 연산이 안전하게 수행되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -606,12 +684,16 @@ namespace Singleton
         {
             // Arrange
             const int recursionDepth = 100;
-            var instances = new HashSet<TestSingleton>();
+            HashSet<TestSingleton> instances = new HashSet<TestSingleton>();
 
             void RecursiveGet(int depth)
             {
-                if (depth <= 0) return;
-                instances.Add(TestSingleton.Instance);
+                if (depth <= 0)
+                {
+                    return;
+                }
+
+                _ = instances.Add(TestSingleton.Instance);
                 RecursiveGet(depth - 1);
             }
 
@@ -619,7 +701,11 @@ namespace Singleton
             RecursiveGet(recursionDepth);
 
             // Assert
-            Assert.That(instances.Count, Is.EqualTo(1), "재귀적 접근에서도 동일한 인스턴스를 반환해야 합니다");
+            Assert.That(
+                instances.Count,
+                Is.EqualTo(1),
+                "재귀적 접근에서도 동일한 인스턴스를 반환해야 합니다"
+            );
         }
 
         /// <summary>
@@ -632,45 +718,62 @@ namespace Singleton
             // Arrange
             const int depth = 50;
             const int threadCount = 10;
-            var exceptions = new ConcurrentBag<Exception>();
-            var instances = new ConcurrentBag<TestSingleton>();
-            var startEvent = new ManualResetEventSlim(false);
-            var completedThreads = 0;
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            ConcurrentBag<TestSingleton> instances = new ConcurrentBag<TestSingleton>();
+            ManualResetEventSlim startEvent = new ManualResetEventSlim(false);
+            int completedThreads = 0;
 
             void RecursiveAccess(int currentDepth)
             {
-                if (currentDepth <= 0) return;
+                if (currentDepth <= 0)
+                {
+                    return;
+                }
+
                 instances.Add(TestSingleton.Instance);
                 RecursiveAccess(currentDepth - 1);
             }
 
             // Act
-            var tasks = Enumerable.Range(0, threadCount).Select(_ => Task.Run(() =>
-            {
-                try
-                {
-                    // 모든 스레드가 동시에 시작하도록 대기
-                    startEvent.Wait();
-                    RecursiveAccess(depth);
-                    Interlocked.Increment(ref completedThreads);
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                }
-            })).ToArray();
+            Task[] tasks = Enumerable
+                .Range(0, threadCount)
+                .Select(_ =>
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            // 모든 스레드가 동시에 시작하도록 대기
+                            startEvent.Wait();
+                            RecursiveAccess(depth);
+                            _ = Interlocked.Increment(ref completedThreads);
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    })
+                )
+                .ToArray();
 
             // 모든 스레드 시작
             startEvent.Set();
 
             // 시간 제한 설정
-            var completed = Task.WaitAll(tasks, TimeSpan.FromSeconds(30));
+            bool completed = Task.WaitAll(tasks, TimeSpan.FromSeconds(30));
 
             // Assert
             Assert.That(completed, Is.True, "모든 스레드가 시간 내에 완료되어야 합니다");
             Assert.That(exceptions, Is.Empty, "재귀적 접근 중 예외가 발생하지 않아야 합니다");
-            Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 재귀 호출에서 동일한 인스턴스를 반환해야 합니다");
-            Assert.That(completedThreads, Is.EqualTo(threadCount), "모든 스레드가 완료되어야 합니다");
+            Assert.That(
+                instances.Distinct().Count(),
+                Is.EqualTo(1),
+                "모든 재귀 호출에서 동일한 인스턴스를 반환해야 합니다"
+            );
+            Assert.That(
+                completedThreads,
+                Is.EqualTo(threadCount),
+                "모든 스레드가 완료되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -682,63 +785,68 @@ namespace Singleton
         {
             // Arrange
             const int threadCount = 10;
-            var countdown = new CountdownEvent(threadCount);
-            var tasks = new List<Task>();
-            var exceptions = new ConcurrentBag<Exception>();
-            var lockObject1 = new object();
-            var lockObject2 = new object();
+            CountdownEvent countdown = new CountdownEvent(threadCount);
+            List<Task> tasks = new List<Task>();
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            object lockObject1 = new object();
+            object lockObject2 = new object();
 
             // Act
             for (int i = 0; i < threadCount; i++)
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    try
+                tasks.Add(
+                    Task.Run(() =>
                     {
-                        countdown.Signal();
-                        countdown.Wait();
+                        try
+                        {
+                            _ = countdown.Signal();
+                            countdown.Wait();
 
-                        // 교착 상태 시나리오 1: 중첩된 락
-                        if (i % 2 == 0)
-                        {
-                            lock (lockObject1)
+                            // 교착 상태 시나리오 1: 중첩된 락
+                            if (i % 2 == 0)
                             {
-                                Thread.Sleep(10); // 교착 상태 유도
-                                lock (lockObject2)
-                                {
-                                    var instance = TestSingleton.Instance;
-                                    instance.Increment();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            lock (lockObject2)
-                            {
-                                Thread.Sleep(10); // 교착 상태 유도
                                 lock (lockObject1)
                                 {
-                                    var instance = TestSingleton.Instance;
-                                    instance.Increment();
+                                    Thread.Sleep(10); // 교착 상태 유도
+                                    lock (lockObject2)
+                                    {
+                                        TestSingleton instance = TestSingleton.Instance;
+                                        instance.Increment();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                lock (lockObject2)
+                                {
+                                    Thread.Sleep(10); // 교착 상태 유도
+                                    lock (lockObject1)
+                                    {
+                                        TestSingleton instance = TestSingleton.Instance;
+                                        instance.Increment();
+                                    }
                                 }
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
-                }));
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    })
+                );
             }
 
             // 시간 제한 설정 (더 현실적인 시간으로 조정)
-            var completedInTime = Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
+            bool completedInTime = Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(10));
 
             // Assert
             Assert.That(completedInTime, Is.True, "데드락 없이 모든 작업이 완료되어야 합니다");
             Assert.That(exceptions, Is.Empty, "작업 수행 중 예외가 발생하지 않아야 합니다");
-            Assert.That(TestSingleton.Instance.Counter, Is.EqualTo(threadCount),
-                "모든 증가 연산이 정확하게 수행되어야 합니다");
+            Assert.That(
+                TestSingleton.Instance.Counter,
+                Is.EqualTo(threadCount),
+                "모든 증가 연산이 정확하게 수행되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -750,63 +858,73 @@ namespace Singleton
         {
             // Arrange
             const int threadCount = 100;
-            var tasks = new List<Task>();
-            var exceptions = new ConcurrentBag<Exception>();
-            var successfulAccesses = 0;
-            var successfulDisposals = 0;
-            var instance = TestSingleton.Instance;
-            var syncPoint = new CountdownEvent(threadCount);
+            List<Task> tasks = new List<Task>();
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            int successfulAccesses = 0;
+            int successfulDisposals = 0;
+            TestSingleton instance = TestSingleton.Instance;
+            CountdownEvent syncPoint = new CountdownEvent(threadCount);
 
             // Act
             for (int i = 0; i < threadCount; i++)
             {
-                var index = i;
-                tasks.Add(Task.Run(() =>
-                {
-                    try
+                int index = i;
+                tasks.Add(
+                    Task.Run(() =>
                     {
-                        syncPoint.Signal();
-                        syncPoint.Wait(); // 모든 스레드가 동시에 시작하도록 동기화
+                        try
+                        {
+                            _ = syncPoint.Signal();
+                            syncPoint.Wait(); // 모든 스레드가 동시에 시작하도록 동기화
 
-                        if (index % 2 == 0)
-                        {
-                            try
+                            if (index % 2 == 0)
                             {
-                                instance.Dispose();
-                                Interlocked.Increment(ref successfulDisposals);
+                                try
+                                {
+                                    instance.Dispose();
+                                    _ = Interlocked.Increment(ref successfulDisposals);
+                                }
+                                catch (ObjectDisposedException)
+                                {
+                                    // 이미 다른 스레드가 Dispose한 경우 예상되는 예외
+                                }
                             }
-                            catch (ObjectDisposedException)
+                            else
                             {
-                                // 이미 다른 스레드가 Dispose한 경우 예상되는 예외
+                                try
+                                {
+                                    TestSingleton temp = TestSingleton.Instance;
+                                    temp.Increment();
+                                    _ = Interlocked.Increment(ref successfulAccesses);
+                                }
+                                catch (ObjectDisposedException)
+                                {
+                                    // Dispose 이후 접근 시도 시 예상되는 예외
+                                }
                             }
                         }
-                        else
+                        catch (Exception ex) when (ex is not ObjectDisposedException)
                         {
-                            try
-                            {
-                                var temp = TestSingleton.Instance;
-                                temp.Increment();
-                                Interlocked.Increment(ref successfulAccesses);
-                            }
-                            catch (ObjectDisposedException)
-                            {
-                                // Dispose 이후 접근 시도 시 예상되는 예외
-                            }
+                            exceptions.Add(ex);
                         }
-                    }
-                    catch (Exception ex) when (!(ex is ObjectDisposedException))
-                    {
-                        exceptions.Add(ex);
-                    }
-                }));
+                    })
+                );
             }
 
             Task.WaitAll(tasks.ToArray());
 
             // Assert
             Assert.That(exceptions, Is.Empty, "예상치 못한 예외가 발생하지 않아야 합니다");
-            Assert.That(successfulDisposals, Is.GreaterThan(0), "최소 하나의 Dispose가 성공해야 합니다");
-            Assert.That(successfulAccesses, Is.GreaterThan(0), "Dispose 전에 몇 개의 접근은 성공해야 합니다");
+            Assert.That(
+                successfulDisposals,
+                Is.GreaterThan(0),
+                "최소 하나의 Dispose가 성공해야 합니다"
+            );
+            Assert.That(
+                successfulAccesses,
+                Is.GreaterThan(0),
+                "Dispose 전에 몇 개의 접근은 성공해야 합니다"
+            );
         }
 
         /// <summary>
@@ -818,23 +936,29 @@ namespace Singleton
         {
             // Arrange
             const int threadCount = 50;
-            var instances = new ConcurrentBag<TestSingleton>();
-            var tasks = new List<Task>();
+            ConcurrentBag<TestSingleton> instances = new ConcurrentBag<TestSingleton>();
+            List<Task> tasks = new List<Task>();
 
             // Act
             for (int i = 0; i < threadCount; i++)
             {
-                tasks.Add(Task.Run(async () =>
-                {
-                    var instance = await TestSingleton.GetInstanceAsync();
-                    instances.Add(instance);
-                }));
+                tasks.Add(
+                    Task.Run(async () =>
+                    {
+                        TestSingleton instance = await TestSingleton.GetInstanceAsync();
+                        instances.Add(instance);
+                    })
+                );
             }
 
             await Task.WhenAll(tasks);
 
             // Assert
-            Assert.That(instances.Distinct().Count(), Is.EqualTo(1), "모든 스레드가 동일한 인스턴스를 받아야 합니다");
+            Assert.That(
+                instances.Distinct().Count(),
+                Is.EqualTo(1),
+                "모든 스레드가 동일한 인스턴스를 받아야 합니다"
+            );
         }
 
         /// <summary>
@@ -846,33 +970,42 @@ namespace Singleton
         {
             // Arrange
             const int threadCount = 10;
-            var tasks = new List<Task>();
-            var exceptions = new ConcurrentBag<Exception>();
-            var instance = TestSingleton.Instance;
+            List<Task> tasks = new List<Task>();
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
+            TestSingleton instance = TestSingleton.Instance;
             instance.Dispose(); // Dispose 먼저 호출
 
             // Act
             for (int i = 0; i < threadCount; i++)
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    try
+                tasks.Add(
+                    Task.Run(() =>
                     {
-                        var temp = TestSingleton.Instance; // Dispose 후 Instance 호출
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
-                }));
+                        try
+                        {
+                            TestSingleton temp = TestSingleton.Instance; // Dispose 후 Instance 호출
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    })
+                );
             }
 
             Task.WaitAll(tasks.ToArray());
 
             // Assert
-            Assert.That(exceptions, Is.Not.Empty, "Dispose 후 Instance 호출 시 예외가 발생해야 합니다");
-            Assert.That(exceptions, Has.All.TypeOf<ObjectDisposedException>(),
-                "Dispose 후 Instance 호출 시 ObjectDisposedException이 발생해야 합니다");
+            Assert.That(
+                exceptions,
+                Is.Not.Empty,
+                "Dispose 후 Instance 호출 시 예외가 발생해야 합니다"
+            );
+            Assert.That(
+                exceptions,
+                Has.All.TypeOf<ObjectDisposedException>(),
+                "Dispose 후 Instance 호출 시 ObjectDisposedException이 발생해야 합니다"
+            );
         }
     }
 }

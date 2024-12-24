@@ -1,7 +1,7 @@
 using System;
-using System.Threading;
-using System.Reflection;
 using System.Diagnostics;
+using System.Reflection;
+using System.Threading;
 
 namespace Hian.Singleton
 {
@@ -9,35 +9,41 @@ namespace Hian.Singleton
     /// 향상된 thread-safe 싱글턴 패턴 구현
     /// </summary>
     /// <typeparam name="T">싱글턴으로 구현할 클래스 타입</typeparam>
-    public abstract partial class Singleton<T> where T : Singleton<T>, IDisposable
+    public abstract partial class Singleton<T>
+        where T : Singleton<T>, IDisposable
     {
-        private static Lazy<T> _lazy = new Lazy<T>(() =>
-        {
-            try
+        private static Lazy<T> _lazy = new Lazy<T>(
+            static () =>
             {
-                var instance = Activator.CreateInstance(typeof(T), true) as T;
-                if (instance == null)
+                try
                 {
-                    var errorMessage = $"Failed to create instance of {typeof(T)}. Activator.CreateInstance returned null.";
-                    Debug.WriteLine($"[Singleton Error] {errorMessage}");
-                    throw new InvalidOperationException(errorMessage);
+                    if (Activator.CreateInstance(typeof(T), true) is not T instance)
+                    {
+                        string errorMessage =
+                            $"Failed to create instance of {typeof(T)}. Activator.CreateInstance returned null.";
+                        Debug.WriteLine($"[Singleton Error] {errorMessage}");
+                        throw new InvalidOperationException(errorMessage);
+                    }
+                    return instance;
                 }
-                return instance;
-            }
-            catch (TargetInvocationException ex)
-            {
-                var innerEx = ex.InnerException ?? ex;
-                var errorMessage = $"Failed to initialize singleton of type {typeof(T)}. Inner Exception: {innerEx.Message}";
-                Debug.WriteLine($"[Singleton Error] {errorMessage}\n{innerEx.StackTrace}");
-                throw new InvalidOperationException(errorMessage, innerEx);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = $"Failed to initialize singleton of type {typeof(T)}. Exception: {ex.Message}";
-                Debug.WriteLine($"[Singleton Error] {errorMessage}\n{ex.StackTrace}");
-                throw new InvalidOperationException(errorMessage, ex);
-            }
-        }, LazyThreadSafetyMode.ExecutionAndPublication);
+                catch (TargetInvocationException ex)
+                {
+                    Exception innerEx = ex.InnerException ?? ex;
+                    string errorMessage =
+                        $"Failed to initialize singleton of type {typeof(T)}. Inner Exception: {innerEx.Message}";
+                    Debug.WriteLine($"[Singleton Error] {errorMessage}\n{innerEx.StackTrace}");
+                    throw new InvalidOperationException(errorMessage, innerEx);
+                }
+                catch (Exception ex)
+                {
+                    string errorMessage =
+                        $"Failed to initialize singleton of type {typeof(T)}. Exception: {ex.Message}";
+                    Debug.WriteLine($"[Singleton Error] {errorMessage}\n{ex.StackTrace}");
+                    throw new InvalidOperationException(errorMessage, ex);
+                }
+            },
+            LazyThreadSafetyMode.ExecutionAndPublication
+        );
 
         private bool _disposed;
         private static bool _isInitializing;
@@ -50,7 +56,9 @@ namespace Hian.Singleton
                 // 리플렉션으로 생성자를 호출했는지 확인
                 if (Assembly.GetCallingAssembly() != Assembly.GetExecutingAssembly())
                 {
-                    throw new InvalidOperationException($"Cannot create instance of singleton {typeof(T)} directly. Use Instance property instead.");
+                    throw new InvalidOperationException(
+                        $"Cannot create instance of singleton {typeof(T)} directly. Use Instance property instead."
+                    );
                 }
             }
         }
@@ -61,12 +69,15 @@ namespace Hian.Singleton
             {
                 if (_lazy.IsValueCreated && _lazy.Value._disposed)
                 {
-                    throw new ObjectDisposedException(typeof(T).FullName, "The singleton instance has been disposed.");
+                    throw new ObjectDisposedException(
+                        typeof(T).FullName,
+                        "The singleton instance has been disposed."
+                    );
                 }
                 try
                 {
                     _isInitializing = true;
-                    var instance = _lazy.Value;
+                    T instance = _lazy.Value;
                     _isInitialized = 1;
 
                     if (instance._disposed)
@@ -95,12 +106,15 @@ namespace Hian.Singleton
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             if (disposing)
             {
                 // 관리되는 리소스 정리
-                Interlocked.Exchange(ref _isInitialized, 0);
+                _ = Interlocked.Exchange(ref _isInitialized, 0);
             }
             _disposed = true;
         }

@@ -8,7 +8,8 @@ namespace Hian.Singleton
     /// </summary>
     /// <typeparam name="T">싱글톤으로 구현할 MonoBehaviour 클래스 타입</typeparam>
     [DisallowMultipleComponent]
-    public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : SingletonMonoBehaviour<T>
+    public abstract class SingletonMonoBehaviour<T> : MonoBehaviour
+        where T : SingletonMonoBehaviour<T>
     {
         private static T _instance;
         private static readonly object _lock = new object();
@@ -29,7 +30,9 @@ namespace Hian.Singleton
             {
                 if (_isQuitting)
                 {
-                    Debug.LogWarning($"[SingletonMono] Instance of {typeof(T)} is null because the application is quitting.");
+                    Debug.LogWarning(
+                        $"[SingletonMono] Instance of {typeof(T)} is null because the application is quitting."
+                    );
                     return null;
                 }
 
@@ -148,7 +151,9 @@ namespace Hian.Singleton
                     if (_instance == null)
                     {
                         // 새 게임 오브젝트 생성 및 컴포넌트 추가
-                        var singletonObject = new GameObject(typeof(T).Name + " (Singleton)");
+                        GameObject singletonObject = new GameObject(
+                            typeof(T).Name + " (Singleton)"
+                        );
                         _instance = singletonObject.AddComponent<T>();
                         Debug.LogWarning($"[SingletonMono] Created new instance of {typeof(T)}.");
                     }
