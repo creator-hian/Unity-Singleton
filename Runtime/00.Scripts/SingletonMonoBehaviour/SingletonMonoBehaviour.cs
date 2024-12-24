@@ -151,7 +151,9 @@ namespace Hian.Singleton
                     if (_instance == null)
                     {
                         // 새 게임 오브젝트 생성 및 컴포넌트 추가
-                        var singletonObject = new GameObject(typeof(T).Name + " (Singleton)");
+                        GameObject singletonObject = new GameObject(
+                            typeof(T).Name + " (Singleton)"
+                        );
                         _instance = singletonObject.AddComponent<T>();
                         Debug.LogWarning($"[SingletonMono] Created new instance of {typeof(T)}.");
                     }

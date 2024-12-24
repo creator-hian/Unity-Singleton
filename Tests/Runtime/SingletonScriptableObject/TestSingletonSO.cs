@@ -15,15 +15,21 @@ public class TestSingletonSO : SingletonScriptableObject<TestSingletonSO>
 
     public static void SimulateApplicationQuit()
     {
-        var field = typeof(SingletonScriptableObject<TestSingletonSO>)
-            .GetField("_applicationIsQuitting", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        System.Reflection.FieldInfo field =
+            typeof(SingletonScriptableObject<TestSingletonSO>).GetField(
+                "_applicationIsQuitting",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+            );
         field.SetValue(null, true);
     }
 
     public static void SimulateApplicationRestart()
     {
-        var field = typeof(SingletonScriptableObject<TestSingletonSO>)
-            .GetField("_applicationIsQuitting", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        System.Reflection.FieldInfo field =
+            typeof(SingletonScriptableObject<TestSingletonSO>).GetField(
+                "_applicationIsQuitting",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+            );
         field.SetValue(null, false);
     }
 }

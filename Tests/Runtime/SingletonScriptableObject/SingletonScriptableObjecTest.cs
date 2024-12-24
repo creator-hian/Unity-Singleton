@@ -1,8 +1,8 @@
-using NUnit.Framework;
 using System.IO;
 using System.Threading.Tasks;
-using UnityEngine;
+using NUnit.Framework;
 using UnityEditor;
+using UnityEngine;
 
 public class SingletonScriptableObjectTest
 {
@@ -14,10 +14,10 @@ public class SingletonScriptableObjectTest
         // 테스트에 필요한 에셋을 미리 생성
         if (!File.Exists(ResourcePath))
         {
-            var asset = ScriptableObject.CreateInstance<TestSingletonSO>();
-            UnityEditor.AssetDatabase.CreateAsset(asset, ResourcePath);
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
+            TestSingletonSO asset = ScriptableObject.CreateInstance<TestSingletonSO>();
+            AssetDatabase.CreateAsset(asset, ResourcePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 
@@ -27,9 +27,9 @@ public class SingletonScriptableObjectTest
         // 테스트에 사용된 에셋 정리
         if (File.Exists(ResourcePath))
         {
-            UnityEditor.AssetDatabase.DeleteAsset(ResourcePath);
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
+            _ = AssetDatabase.DeleteAsset(ResourcePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 
@@ -37,8 +37,8 @@ public class SingletonScriptableObjectTest
     public void Instance_WhenCalled_ReturnsSameInstance()
     {
         // Arrange & Act
-        var instance1 = TestSingletonSO.Instance;
-        var instance2 = TestSingletonSO.Instance;
+        TestSingletonSO instance1 = TestSingletonSO.Instance;
+        TestSingletonSO instance2 = TestSingletonSO.Instance;
 
         // Assert
         Assert.IsNotNull(instance1);
@@ -49,7 +49,7 @@ public class SingletonScriptableObjectTest
     public void IsValid_WhenInstanceExists_ReturnsTrue()
     {
         // Arrange & Act
-        var instance = TestSingletonSO.Instance;
+        _ = TestSingletonSO.Instance;
 
         // Assert
         Assert.IsTrue(TestSingletonSO.IsValid);
@@ -59,7 +59,7 @@ public class SingletonScriptableObjectTest
     public void IsValid_WhenApplicationQuitting_ReturnsFalse()
     {
         // Arrange
-        var instance = TestSingletonSO.Instance;
+        _ = TestSingletonSO.Instance;
         TestSingletonSO.SimulateApplicationQuit();
 
         // Act & Assert
@@ -74,7 +74,7 @@ public class SingletonScriptableObjectTest
     {
         // Arrange
         // 메인 스레드에서 먼저 인스턴스를 생성
-        var mainThreadInstance = TestSingletonSO.Instance;
+        TestSingletonSO mainThreadInstance = TestSingletonSO.Instance;
 
         TestSingletonSO instance1 = null;
         TestSingletonSO instance2 = null;

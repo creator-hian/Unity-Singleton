@@ -1,11 +1,12 @@
+using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.IO;
 
 public abstract class CreateSingletonScript
 {
     protected const string BASE_MENU_PATH = "Assets/Create/Scripting/Singleton/";
-    protected const string BASE_TEMPLATE_PATH = "Packages/com.creator-hian.unity.singleton/Editor/ScriptTemplate/";
+    protected const string BASE_TEMPLATE_PATH =
+        "Packages/com.creator-hian.unity.singleton/Editor/ScriptTemplate/";
 
     protected abstract string TemplatePath { get; }
     protected abstract string DefaultFileName { get; }
@@ -23,7 +24,7 @@ public abstract class CreateSingletonScript
     private static string GetSelectedPathOrFallback()
     {
         string path = "Assets";
-        
+
         foreach (Object obj in Selection.GetFiltered<Object>(SelectionMode.Assets))
         {
             path = AssetDatabase.GetAssetPath(obj);
@@ -41,12 +42,14 @@ public abstract class CreateSingletonScript
 public class CreateSingletonClass : CreateSingletonScript
 {
     private const string MENU_ITEM = BASE_MENU_PATH + "Singleton Class";
-    
-    [MenuItem(MENU_ITEM)]
-    public static void Create() => new CreateSingletonClass().CreateScript();
 
-    protected override string TemplatePath => 
-        BASE_TEMPLATE_PATH + "SingletonTemplate.cs.txt";
+    [MenuItem(MENU_ITEM)]
+    public static void Create()
+    {
+        new CreateSingletonClass().CreateScript();
+    }
+
+    protected override string TemplatePath => BASE_TEMPLATE_PATH + "SingletonTemplate.cs.txt";
     protected override string DefaultFileName => "NewSingleton.cs";
     protected override string MenuItemName => MENU_ITEM;
 }
@@ -55,11 +58,14 @@ public class CreateSingletonClass : CreateSingletonScript
 public class CreateSingletonMonoBehaviour : CreateSingletonScript
 {
     private const string MENU_ITEM = BASE_MENU_PATH + "Singleton MonoBehaviour";
-    
-    [MenuItem(MENU_ITEM)]
-    public static void Create() => new CreateSingletonMonoBehaviour().CreateScript();
 
-    protected override string TemplatePath => 
+    [MenuItem(MENU_ITEM)]
+    public static void Create()
+    {
+        new CreateSingletonMonoBehaviour().CreateScript();
+    }
+
+    protected override string TemplatePath =>
         BASE_TEMPLATE_PATH + "SingletonMonoBehaviourTemplate.cs.txt";
     protected override string DefaultFileName => "NewSingletonMonoBehaviour.cs";
     protected override string MenuItemName => MENU_ITEM;
@@ -69,12 +75,15 @@ public class CreateSingletonMonoBehaviour : CreateSingletonScript
 public class CreateSingletonScriptableObject : CreateSingletonScript
 {
     private const string MENU_ITEM = BASE_MENU_PATH + "Singleton ScriptableObject";
-    
-    [MenuItem(MENU_ITEM)]
-    public static void Create() => new CreateSingletonScriptableObject().CreateScript();
 
-    protected override string TemplatePath => 
+    [MenuItem(MENU_ITEM)]
+    public static void Create()
+    {
+        new CreateSingletonScriptableObject().CreateScript();
+    }
+
+    protected override string TemplatePath =>
         BASE_TEMPLATE_PATH + "SingletonScriptableObjectTemplate.cs.txt";
     protected override string DefaultFileName => "NewSingletonScriptableObject.cs";
     protected override string MenuItemName => MENU_ITEM;
-} 
+}

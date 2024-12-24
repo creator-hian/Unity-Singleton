@@ -16,10 +16,9 @@ namespace Hian.Singleton
                 {
                     try
                     {
-                        var instance = Activator.CreateInstance(typeof(T), true) as T;
-                        if (instance == null)
+                        if (Activator.CreateInstance(typeof(T), true) is not T instance)
                         {
-                            var errorMessage =
+                            string errorMessage =
                                 $"Failed to create instance of {typeof(T)}. Activator.CreateInstance returned null.";
                             Debug.WriteLine($"[Singleton Error] {errorMessage}");
                             throw new InvalidOperationException(errorMessage);
@@ -28,15 +27,15 @@ namespace Hian.Singleton
                     }
                     catch (TargetInvocationException ex)
                     {
-                        var innerEx = ex.InnerException ?? ex;
-                        var errorMessage =
+                        Exception innerEx = ex.InnerException ?? ex;
+                        string errorMessage =
                             $"Failed to initialize singleton of type {typeof(T)}. Inner Exception: {innerEx.Message}";
                         Debug.WriteLine($"[Singleton Error] {errorMessage}\n{innerEx.StackTrace}");
                         throw new InvalidOperationException(errorMessage, innerEx);
                     }
                     catch (Exception ex)
                     {
-                        var errorMessage =
+                        string errorMessage =
                             $"Failed to initialize singleton of type {typeof(T)}. Exception: {ex.Message}";
                         Debug.WriteLine($"[Singleton Error] {errorMessage}\n{ex.StackTrace}");
                         throw new InvalidOperationException(errorMessage, ex);

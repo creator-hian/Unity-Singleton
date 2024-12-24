@@ -29,14 +29,16 @@ namespace SingletonMonoBehaviour
 
             // 테스트 씬 로드
             yield return SceneManager.LoadSceneAsync(TestSceneName, LoadSceneMode.Additive);
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(TestSceneName));
+            _ = SceneManager.SetActiveScene(SceneManager.GetSceneByName(TestSceneName));
 
             // 테스트 시작 전에 모든 게임 오브젝트 삭제
-            foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+            foreach (
+                GameObject go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None)
+            )
             {
                 Object.Destroy(go);
             }
-            
+
             // Persist 속성 기본값으로 설정
             TestSingletonMonoBehaviour.Persist = true;
             InheritedTestSingletonMonoBehaviour.Persist = true;
@@ -55,7 +57,7 @@ namespace SingletonMonoBehaviour
 
             // 원래 씬으로 복귀
             yield return SceneManager.LoadSceneAsync(_originalSceneName);
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(_originalSceneName));
+            _ = SceneManager.SetActiveScene(SceneManager.GetSceneByName(_originalSceneName));
         }
 
         /// <summary>
@@ -65,14 +67,18 @@ namespace SingletonMonoBehaviour
         public IEnumerator Instance_ReturnsSameInstance()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
 
             // Assert
-            Assert.That(instance1, Is.EqualTo(instance2), "Instance는 항상 동일한 인스턴스를 반환해야 합니다");
+            Assert.That(
+                instance1,
+                Is.EqualTo(instance2),
+                "Instance는 항상 동일한 인스턴스를 반환해야 합니다"
+            );
         }
 
         /// <summary>
@@ -82,7 +88,7 @@ namespace SingletonMonoBehaviour
         public IEnumerator Awake_Called()
         {
             // Arrange
-            var instance = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act & Assert
@@ -96,7 +102,7 @@ namespace SingletonMonoBehaviour
         public IEnumerator OnDestroy_Called()
         {
             // Arrange
-            var instance = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
@@ -114,7 +120,7 @@ namespace SingletonMonoBehaviour
         public IEnumerator DontDestroyOnLoad_PersistsAcrossScenes()
         {
             // Arrange
-            var instance = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
@@ -122,7 +128,11 @@ namespace SingletonMonoBehaviour
             yield return null; // 씬 로드 대기
 
             // Assert
-            Assert.That(TestSingletonMonoBehaviour.Instance, Is.EqualTo(instance), "DontDestroyOnLoad로 설정된 인스턴스는 씬 전환 후에도 유지되어야 합니다");
+            Assert.That(
+                TestSingletonMonoBehaviour.Instance,
+                Is.EqualTo(instance),
+                "DontDestroyOnLoad로 설정된 인스턴스는 씬 전환 후에도 유지되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -132,13 +142,19 @@ namespace SingletonMonoBehaviour
         public IEnumerator MultipleInstances_OnlyFirstInstancePersists()
         {
             // Arrange
-            var instance1 = new GameObject().AddComponent<TestSingletonMonoBehaviour>();
+            TestSingletonMonoBehaviour instance1 =
+                new GameObject().AddComponent<TestSingletonMonoBehaviour>();
             yield return null; // Awake 실행 대기
-            var instance2 = new GameObject().AddComponent<TestSingletonMonoBehaviour>();
+            TestSingletonMonoBehaviour instance2 =
+                new GameObject().AddComponent<TestSingletonMonoBehaviour>();
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(TestSingletonMonoBehaviour.Instance, Is.EqualTo(instance1), "첫 번째 인스턴스만 유지되어야 합니다");
+            Assert.That(
+                TestSingletonMonoBehaviour.Instance,
+                Is.EqualTo(instance1),
+                "첫 번째 인스턴스만 유지되어야 합니다"
+            );
             Assert.That(instance2, Is.Null, "두 번째 인스턴스는 삭제되어야 합니다");
         }
 
@@ -149,12 +165,17 @@ namespace SingletonMonoBehaviour
         public IEnumerator InheritedSingleton_WorksCorrectly()
         {
             // Arrange
-            var instance = InheritedTestSingletonMonoBehaviour.Instance;
+            InheritedTestSingletonMonoBehaviour instance =
+                InheritedTestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
             Assert.That(instance, Is.Not.Null, "상속받은 싱글턴 인스턴스가 생성되어야 합니다");
-            Assert.That(instance.AwakeCalled, Is.True, "상속받은 싱글턴의 Awake가 호출되어야 합니다");
+            Assert.That(
+                instance.AwakeCalled,
+                Is.True,
+                "상속받은 싱글턴의 Awake가 호출되어야 합니다"
+            );
         }
 
         /// <summary>
@@ -164,7 +185,7 @@ namespace SingletonMonoBehaviour
         public IEnumerator MultithreadedAccess_ReturnsSameInstance()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             TestSingletonMonoBehaviour instance2 = null;
@@ -173,12 +194,14 @@ namespace SingletonMonoBehaviour
             int thread2Value = 0;
 
             // Act
-            var task1 = Task.Run(() => { 
+            Task task1 = Task.Run(() =>
+            {
                 instance2 = TestSingletonMonoBehaviour.Instance;
                 instance2.TestValue = 10;
                 thread1Value = instance2.TestValue;
             });
-            var task2 = Task.Run(() => { 
+            Task task2 = Task.Run(() =>
+            {
                 instance3 = TestSingletonMonoBehaviour.Instance;
                 thread2Value = instance3.TestValue;
             });
@@ -186,10 +209,26 @@ namespace SingletonMonoBehaviour
             Task.WaitAll(task1, task2);
 
             // Assert
-            Assert.That(instance2, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
-            Assert.That(instance3, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
-            Assert.That(thread1Value, Is.EqualTo(10), "스레드 1에서 변경된 값이 반영되어야 합니다.");
-            Assert.That(thread2Value, Is.EqualTo(10), "스레드 2에서 변경된 값이 반영되어야 합니다.");
+            Assert.That(
+                instance2,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
+            Assert.That(
+                instance3,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
+            Assert.That(
+                thread1Value,
+                Is.EqualTo(10),
+                "스레드 1에서 변경된 값이 반영되어야 합니다."
+            );
+            Assert.That(
+                thread2Value,
+                Is.EqualTo(10),
+                "스레드 2에서 변경된 값이 반영되어야 합니다."
+            );
         }
 
         /// <summary>
@@ -199,25 +238,36 @@ namespace SingletonMonoBehaviour
         public IEnumerator SceneTransition_PersistsCorrectly()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
-            var loadSceneAsync = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name, LoadSceneMode.Additive);
+            AsyncOperation loadSceneAsync = SceneManager.LoadSceneAsync(
+                SceneManager.GetActiveScene().name,
+                LoadSceneMode.Additive
+            );
             while (!loadSceneAsync.isDone)
             {
                 yield return null;
             }
-            var newScene = SceneManager.GetSceneByName(SceneManager.GetActiveScene().name);
-            SceneManager.SetActiveScene(newScene);
+            Scene newScene = SceneManager.GetSceneByName(SceneManager.GetActiveScene().name);
+            _ = SceneManager.SetActiveScene(newScene);
             yield return null; // 씬 로드 대기
 
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance2, Is.EqualTo(instance1), "씬 전환 후에도 싱글톤 인스턴스는 유지되어야 합니다.");
-            Assert.That(instance2.AwakeCalled, Is.True, "씬 전환 후에도 Awake가 호출되어야 합니다.");
+            Assert.That(
+                instance2,
+                Is.EqualTo(instance1),
+                "씬 전환 후에도 싱글톤 인스턴스는 유지되어야 합니다."
+            );
+            Assert.That(
+                instance2.AwakeCalled,
+                Is.True,
+                "씬 전환 후에도 Awake가 호출되어야 합니다."
+            );
 
             // Cleanup
             yield return SceneManager.UnloadSceneAsync(newScene);
@@ -231,12 +281,15 @@ namespace SingletonMonoBehaviour
         {
             // Arrange
             // Act & Assert (예외가 발생하지 않아야 함)
-            Assert.DoesNotThrow(() =>
-            {
-                var instance = TestSingletonMonoBehaviour.Instance;
-                // ReSharper disable once UnusedVariable
-                var _ = instance.gameObject; // null 참조 예외 방지
-            }, "싱글톤 인스턴스 접근 시 예외가 발생하면 안 됩니다.");
+            Assert.DoesNotThrow(
+                static () =>
+                {
+                    TestSingletonMonoBehaviour instance = TestSingletonMonoBehaviour.Instance;
+                    // ReSharper disable once UnusedVariable
+                    GameObject _ = instance.gameObject; // null 참조 예외 방지
+                },
+                "싱글톤 인스턴스 접근 시 예외가 발생하면 안 됩니다."
+            );
             yield return null; // Awake 실행 대기
         }
 
@@ -247,17 +300,21 @@ namespace SingletonMonoBehaviour
         public IEnumerator FindInactive_FindsInactiveInstance()
         {
             // Arrange
-            var go = new GameObject();
-            var instance = go.AddComponent<TestSingletonMonoBehaviour>();
+            GameObject go = new GameObject();
+            TestSingletonMonoBehaviour instance = go.AddComponent<TestSingletonMonoBehaviour>();
             go.SetActive(false);
             yield return null; // Awake 실행 대기
 
             // Act
             SingletonMonoBehaviour<TestSingletonMonoBehaviour>.FindInactive = true;
-            var foundInstance = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour foundInstance = TestSingletonMonoBehaviour.Instance;
 
             // Assert
-            Assert.That(foundInstance, Is.EqualTo(instance), "비활성화된 인스턴스를 찾아야 합니다.");
+            Assert.That(
+                foundInstance,
+                Is.EqualTo(instance),
+                "비활성화된 인스턴스를 찾아야 합니다."
+            );
 
             // Cleanup
             Object.Destroy(go);
@@ -272,18 +329,22 @@ namespace SingletonMonoBehaviour
         {
             // Arrange
             TestSingletonMonoBehaviour.Persist = false;
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             yield return null; // 씬 로드 대기
 
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance2, Is.Not.EqualTo(instance1), "Persist가 false일 때 씬 전환 후 새로운 인스턴스가 생성되어야 합니다.");
+            Assert.That(
+                instance2,
+                Is.Not.EqualTo(instance1),
+                "Persist가 false일 때 씬 전환 후 새로운 인스턴스가 생성되어야 합니다."
+            );
         }
 
         /// <summary>
@@ -294,11 +355,13 @@ namespace SingletonMonoBehaviour
         {
             // Arrange
             TestSingletonMonoBehaviour.Persist = false; // 최초 인스턴스 생성 시 Persist를 false로 설정
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
-            var loadSceneAsync = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+            AsyncOperation loadSceneAsync = SceneManager.LoadSceneAsync(
+                SceneManager.GetActiveScene().name
+            );
             while (!loadSceneAsync.isDone)
             {
                 yield return null;
@@ -307,11 +370,15 @@ namespace SingletonMonoBehaviour
 
             TestSingletonMonoBehaviour.Persist = true; // 씬 전환 후 Persist를 true로 변경
             TestSingletonMonoBehaviour.EnsureInitialized();
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance2, Is.Not.EqualTo(instance1), "Persist 값이 변경되었으므로 씬 전환 후 새로운 인스턴스가 생성되어야 합니다.");
+            Assert.That(
+                instance2,
+                Is.Not.EqualTo(instance1),
+                "Persist 값이 변경되었으므로 씬 전환 후 새로운 인스턴스가 생성되어야 합니다."
+            );
         }
 
         /// <summary>
@@ -322,17 +389,21 @@ namespace SingletonMonoBehaviour
         {
             // Arrange
             TestSingletonMonoBehaviour.Persist = true;
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
             TestSingletonMonoBehaviour.Persist = false;
             TestSingletonMonoBehaviour.EnsureInitialized();
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance2, Is.EqualTo(instance1), "Persist 값이 변경되었지만 EnsureInitialized 호출 후에도 기존 인스턴스가 유지되어야 합니다.");
+            Assert.That(
+                instance2,
+                Is.EqualTo(instance1),
+                "Persist 값이 변경되었지만 EnsureInitialized 호출 후에도 기존 인스턴스가 유지되어야 합니다."
+            );
         }
 
         /// <summary>
@@ -342,24 +413,32 @@ namespace SingletonMonoBehaviour
         public IEnumerator FindInactive_ActiveAndInactiveInstances_ReturnsCorrectInstance()
         {
             // Arrange
-            var go1 = new GameObject();
-            var instance1 = go1.AddComponent<TestSingletonMonoBehaviour>();
+            GameObject go1 = new GameObject();
+            TestSingletonMonoBehaviour instance1 = go1.AddComponent<TestSingletonMonoBehaviour>();
 
-            var go2 = new GameObject();
-            var instance2 = go2.AddComponent<TestSingletonMonoBehaviour>();
+            GameObject go2 = new GameObject();
+            _ = go2.AddComponent<TestSingletonMonoBehaviour>();
             go2.SetActive(false);
             yield return null; // Awake 실행 대기
 
             // Act & Assert
             // FindInactive가 true일 때 비활성화된 인스턴스를 찾아야 합니다.
             SingletonMonoBehaviour<TestSingletonMonoBehaviour>.FindInactive = true;
-            var foundInstance1 = TestSingletonMonoBehaviour.Instance;
-            Assert.That(foundInstance1, Is.EqualTo(instance1), "FindInactive가 true일 때 활성화된 인스턴스를 찾아야 합니다.");
+            TestSingletonMonoBehaviour foundInstance1 = TestSingletonMonoBehaviour.Instance;
+            Assert.That(
+                foundInstance1,
+                Is.EqualTo(instance1),
+                "FindInactive가 true일 때 활성화된 인스턴스를 찾아야 합니다."
+            );
 
             // FindInactive가 false일 때 활성화된 인스턴스를 찾아야 합니다.
             SingletonMonoBehaviour<TestSingletonMonoBehaviour>.FindInactive = false;
-            var foundInstance2 = TestSingletonMonoBehaviour.Instance;
-            Assert.That(foundInstance2, Is.EqualTo(instance1), "FindInactive가 false일 때 활성화된 인스턴스를 찾아야 합니다.");
+            TestSingletonMonoBehaviour foundInstance2 = TestSingletonMonoBehaviour.Instance;
+            Assert.That(
+                foundInstance2,
+                Is.EqualTo(instance1),
+                "FindInactive가 false일 때 활성화된 인스턴스를 찾아야 합니다."
+            );
 
             // Cleanup
             Object.Destroy(go1);
@@ -374,20 +453,24 @@ namespace SingletonMonoBehaviour
         public IEnumerator FindInactive_MultipleInactiveInstances_ReturnsFirstFound()
         {
             // Arrange
-            var go1 = new GameObject();
-            var instance1 = go1.AddComponent<TestSingletonMonoBehaviour>();
+            GameObject go1 = new GameObject();
+            TestSingletonMonoBehaviour instance1 = go1.AddComponent<TestSingletonMonoBehaviour>();
             go1.SetActive(false);
 
-            var go2 = new GameObject();
-            var instance2 = go2.AddComponent<TestSingletonMonoBehaviour>();
+            GameObject go2 = new GameObject();
+            _ = go2.AddComponent<TestSingletonMonoBehaviour>();
             go2.SetActive(false);
             yield return null; // Awake 실행 대기
 
             // Act & Assert
             // FindInactive가 true일 때 첫 번째 비활성화된 인스턴스를 찾아야 합니다.
             SingletonMonoBehaviour<TestSingletonMonoBehaviour>.FindInactive = true;
-            var foundInstance = TestSingletonMonoBehaviour.Instance;
-            Assert.That(foundInstance, Is.EqualTo(instance1), "비활성화된 인스턴스 중 첫 번째 인스턴스를 찾아야 합니다.");
+            TestSingletonMonoBehaviour foundInstance = TestSingletonMonoBehaviour.Instance;
+            Assert.That(
+                foundInstance,
+                Is.EqualTo(instance1),
+                "비활성화된 인스턴스 중 첫 번째 인스턴스를 찾아야 합니다."
+            );
 
             // Cleanup
             Object.Destroy(go1);
@@ -402,17 +485,21 @@ namespace SingletonMonoBehaviour
         public IEnumerator EnsureInitialized_CalledMultipleTimes_KeepsExistingInstance()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Act
             TestSingletonMonoBehaviour.EnsureInitialized();
             TestSingletonMonoBehaviour.EnsureInitialized();
-            var instance2 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance2 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance2, Is.EqualTo(instance1), "EnsureInitialized를 여러 번 호출해도 기존 인스턴스를 유지해야 합니다.");
+            Assert.That(
+                instance2,
+                Is.EqualTo(instance1),
+                "EnsureInitialized를 여러 번 호출해도 기존 인스턴스를 유지해야 합니다."
+            );
         }
 
         /// <summary>
@@ -422,14 +509,22 @@ namespace SingletonMonoBehaviour
         public IEnumerator EnsureInitialized_IsInitializedValue()
         {
             // Arrange
-            Assert.That(TestSingletonMonoBehaviour.IsInitialized, Is.False, "EnsureInitialized 호출 전에는 IsInitialized가 false여야 합니다.");
+            Assert.That(
+                TestSingletonMonoBehaviour.IsInitialized,
+                Is.False,
+                "EnsureInitialized 호출 전에는 IsInitialized가 false여야 합니다."
+            );
 
             // Act
             TestSingletonMonoBehaviour.EnsureInitialized();
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(TestSingletonMonoBehaviour.IsInitialized, Is.True, "EnsureInitialized 호출 후에는 IsInitialized가 true여야 합니다.");
+            Assert.That(
+                TestSingletonMonoBehaviour.IsInitialized,
+                Is.True,
+                "EnsureInitialized 호출 후에는 IsInitialized가 true여야 합니다."
+            );
         }
 
         /// <summary>
@@ -438,14 +533,13 @@ namespace SingletonMonoBehaviour
         [UnityTest]
         public IEnumerator ExceptionHandling_ExceptionDuringCreation()
         {
-            TestSingletonMonoBehaviourWithException instance = null;
-
             // Assert
             LogAssert.Expect(LogType.Exception, "Exception: Test Exception");
 
             // Arrange
-            instance = new GameObject().AddComponent<TestSingletonMonoBehaviourWithException>();
-            var _ = instance.gameObject; // null 참조 예외 방지
+            TestSingletonMonoBehaviourWithException instance =
+                new GameObject().AddComponent<TestSingletonMonoBehaviourWithException>();
+            _ = instance.gameObject; // null 참조 예외 방지
             yield return null; // Awake 실행 대기
         }
 
@@ -458,9 +552,10 @@ namespace SingletonMonoBehaviour
             // Arrange
             LogAssert.Expect(LogType.Exception, "Exception: Test Exception in Awake");
 
-            var instance = TestSingletonMonoBehaviourWithExceptionInAwake.Instance;
+            TestSingletonMonoBehaviourWithExceptionInAwake instance =
+                TestSingletonMonoBehaviourWithExceptionInAwake.Instance;
             // ReSharper disable once UnusedVariable
-            var _ = instance.gameObject; // null 참조 예외 방지
+            GameObject _ = instance.gameObject; // null 참조 예외 방지
             yield return null; // Awake 실행 대기
         }
 
@@ -471,7 +566,7 @@ namespace SingletonMonoBehaviour
         public IEnumerator MultithreadedAccess_MultipleThreads()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviour.Instance;
+            TestSingletonMonoBehaviour instance1 = TestSingletonMonoBehaviour.Instance;
             yield return null; // Awake 실행 대기
 
             TestSingletonMonoBehaviour instance2 = null;
@@ -480,18 +575,46 @@ namespace SingletonMonoBehaviour
             TestSingletonMonoBehaviour instance5 = null;
 
             // Act
-            var task1 = Task.Run(() => { instance2 = TestSingletonMonoBehaviour.Instance; });
-            var task2 = Task.Run(() => { instance3 = TestSingletonMonoBehaviour.Instance; });
-            var task3 = Task.Run(() => { instance4 = TestSingletonMonoBehaviour.Instance; });
-            var task4 = Task.Run(() => { instance5 = TestSingletonMonoBehaviour.Instance; });
+            Task task1 = Task.Run(() =>
+            {
+                instance2 = TestSingletonMonoBehaviour.Instance;
+            });
+            Task task2 = Task.Run(() =>
+            {
+                instance3 = TestSingletonMonoBehaviour.Instance;
+            });
+            Task task3 = Task.Run(() =>
+            {
+                instance4 = TestSingletonMonoBehaviour.Instance;
+            });
+            Task task4 = Task.Run(() =>
+            {
+                instance5 = TestSingletonMonoBehaviour.Instance;
+            });
 
             Task.WaitAll(task1, task2, task3, task4);
 
             // Assert
-            Assert.That(instance2, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
-            Assert.That(instance3, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
-            Assert.That(instance4, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
-            Assert.That(instance5, Is.EqualTo(instance1), "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다.");
+            Assert.That(
+                instance2,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
+            Assert.That(
+                instance3,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
+            Assert.That(
+                instance4,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
+            Assert.That(
+                instance5,
+                Is.EqualTo(instance1),
+                "멀티 스레드 환경에서 Instance는 동일한 인스턴스를 반환해야 합니다."
+            );
         }
 
         /// <summary>
@@ -501,9 +624,9 @@ namespace SingletonMonoBehaviour
         public IEnumerator MultipleSingletons_InitializationOrder()
         {
             // Arrange
-            var instance1 = TestSingletonMonoBehaviourA.Instance;
+            TestSingletonMonoBehaviourA instance1 = TestSingletonMonoBehaviourA.Instance;
             yield return null; // Awake 실행 대기
-            var instance2 = TestSingletonMonoBehaviourB.Instance;
+            TestSingletonMonoBehaviourB instance2 = TestSingletonMonoBehaviourB.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
@@ -513,7 +636,6 @@ namespace SingletonMonoBehaviour
             Assert.That(instance2.AwakeCalled, Is.True, "싱글톤 B의 Awake가 호출되어야 합니다.");
         }
 
-
         /// <summary>
         /// OnSingletonAwake 메서드에서 커스텀 초기화가 실행되는지 테스트합니다.
         /// </summary>
@@ -521,11 +643,16 @@ namespace SingletonMonoBehaviour
         public IEnumerator OnSingletonAwake_CustomInitialization()
         {
             // Arrange
-            var instance = TestSingletonMonoBehaviourWithCustomAwake.Instance;
+            TestSingletonMonoBehaviourWithCustomAwake instance =
+                TestSingletonMonoBehaviourWithCustomAwake.Instance;
             yield return null; // Awake 실행 대기
 
             // Assert
-            Assert.That(instance.IsCustomInitialized, Is.True, "OnSingletonAwake에서 커스텀 초기화가 실행되어야 합니다.");
+            Assert.That(
+                instance.IsCustomInitialized,
+                Is.True,
+                "OnSingletonAwake에서 커스텀 초기화가 실행되어야 합니다."
+            );
         }
 
         /// <summary>
@@ -536,23 +663,27 @@ namespace SingletonMonoBehaviour
         public void Performance_InstanceAccess(int iterations, int timeoutMilliseconds)
         {
             // Arrange
-            var instance = TestSingletonMonoBehaviour.Instance;
+            _ = TestSingletonMonoBehaviour.Instance;
 
-            var stopwatch = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
             // Act
             stopwatch.Start();
             for (int i = 0; i < iterations; i++)
             {
-                var _ = TestSingletonMonoBehaviour.Instance;
+                _ = TestSingletonMonoBehaviour.Instance;
             }
             stopwatch.Stop();
 
             // Assert
-            Debug.Log($"[SingletonMono] {iterations}회 싱글톤 인스턴스 접근 시간: {stopwatch.ElapsedMilliseconds}ms");
+            Debug.Log(
+                $"[SingletonMono] {iterations}회 싱글톤 인스턴스 접근 시간: {stopwatch.ElapsedMilliseconds}ms"
+            );
             if (stopwatch.ElapsedMilliseconds > timeoutMilliseconds)
             {
-                Assert.Fail($"테스트가 {timeoutMilliseconds}ms 내에 완료되어야 합니다. 실제 소요 시간: {stopwatch.ElapsedMilliseconds}ms");
+                Assert.Fail(
+                    $"테스트가 {timeoutMilliseconds}ms 내에 완료되어야 합니다. 실제 소요 시간: {stopwatch.ElapsedMilliseconds}ms"
+                );
             }
         }
 
@@ -567,7 +698,8 @@ namespace SingletonMonoBehaviour
         /// <summary>
         /// 싱글톤을 상속받아 구현한 테스트 클래스입니다.
         /// </summary>
-        public class InheritedTestSingletonMonoBehaviour : SingletonMonoBehaviour<InheritedTestSingletonMonoBehaviour>
+        public class InheritedTestSingletonMonoBehaviour
+            : SingletonMonoBehaviour<InheritedTestSingletonMonoBehaviour>
         {
             /// <summary>
             /// Awake 메서드 호출 여부를 저장하는 프로퍼티입니다.
@@ -627,7 +759,8 @@ namespace SingletonMonoBehaviour
         /// <summary>
         /// 싱글톤 테스트를 위한 클래스 (생성 시 예외 발생)
         /// </summary>
-        public class TestSingletonMonoBehaviourWithException : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithException>
+        public class TestSingletonMonoBehaviourWithException
+            : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithException>
         {
             protected override void Awake()
             {
@@ -639,9 +772,11 @@ namespace SingletonMonoBehaviour
         /// <summary>
         /// 싱글톤 테스트를 위한 클래스 (Awake에서 예외 발생)
         /// </summary>
-        public class TestSingletonMonoBehaviourWithExceptionInAwake : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithExceptionInAwake>
+        public class TestSingletonMonoBehaviourWithExceptionInAwake
+            : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithExceptionInAwake>
         {
             public static bool AwakeCalled { get; private set; }
+
             protected override void Awake()
             {
                 base.Awake();
@@ -653,9 +788,11 @@ namespace SingletonMonoBehaviour
         /// <summary>
         /// 싱글톤 테스트를 위한 클래스 A
         /// </summary>
-        public class TestSingletonMonoBehaviourA : SingletonMonoBehaviour<TestSingletonMonoBehaviourA>
+        public class TestSingletonMonoBehaviourA
+            : SingletonMonoBehaviour<TestSingletonMonoBehaviourA>
         {
             public bool AwakeCalled { get; private set; }
+
             protected override void Awake()
             {
                 base.Awake();
@@ -666,9 +803,11 @@ namespace SingletonMonoBehaviour
         /// <summary>
         /// 싱글톤 테스트를 위한 클래스 B
         /// </summary>
-        public class TestSingletonMonoBehaviourB : SingletonMonoBehaviour<TestSingletonMonoBehaviourB>
+        public class TestSingletonMonoBehaviourB
+            : SingletonMonoBehaviour<TestSingletonMonoBehaviourB>
         {
             public bool AwakeCalled { get; private set; }
+
             protected override void Awake()
             {
                 base.Awake();
@@ -676,11 +815,11 @@ namespace SingletonMonoBehaviour
             }
         }
 
-
         /// <summary>
         /// 싱글톤 테스트를 위한 클래스 (OnSingletonAwake에서 커스텀 초기화)
         /// </summary>
-        public class TestSingletonMonoBehaviourWithCustomAwake : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithCustomAwake>
+        public class TestSingletonMonoBehaviourWithCustomAwake
+            : SingletonMonoBehaviour<TestSingletonMonoBehaviourWithCustomAwake>
         {
             public bool IsCustomInitialized { get; private set; }
 
@@ -690,6 +829,5 @@ namespace SingletonMonoBehaviour
                 IsCustomInitialized = true;
             }
         }
-
     }
 }
